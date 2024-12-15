@@ -1,6 +1,6 @@
 ﻿model MTA.Models.Department
 @{
-    ViewBag.Title = "Afisare categorie";
+    ViewBag.Title = "Show department";
 }
 
 
@@ -14,13 +14,13 @@
 <form method="post" asp-controller="Departments" asp-action="Delete"
       asp-route-id="@Model.Id">
 
-    <button class="btn btn-danger" type="submit">Sterge categoria</button>
+    <button class="btn btn-danger" type="submit">Delete department</button>
 
 </form>
 
 <br />
 
-<a class="btn alert-success" href="/Departments/Index/">Afisare lista categorii</a>
+<a class="btn alert-success" href="/Departments/Index/">Show department list</a>
 
 <br />
 <hr />

@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Lista departamente";
+    ViewBag.Title = "Department list";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -16,17 +16,17 @@
 @foreach (MTA.Models.Department department in ViewBag.Departments)
 {
     <div class="form-group">
-        <label asp-for="@department.DepartmentName" class="form-label">Denumire categorie</label>
+        <label asp-for="@department.DepartmentName" class="form-label">Department name</label>
         <div><i class="bi bi-globe"></i> @department.DepartmentName</div>
     </div>
     <br />
-    <a class="btn alert-success" asp-controller="Departments" asp-action="Show" asp-route-id="@department.Id">Afisare categorie</a>
-    <a class="btn alert-success" asp-controller="Departments" asp-action="Edit" asp-route-id="@department.Id">Editare categorie</a>
+    <a class="btn alert-success" asp-controller="Departments" asp-action="Show" asp-route-id="@department.Id">Show department</a>
+    <a class="btn alert-success" asp-controller="Departments" asp-action="Edit" asp-route-id="@department.Id">Edit department</a>
     <br />
     <br />
 
 }
 <br />
-<a class="btn btn-success" asp-controller="Departments" asp-action="New">Adauga o noua categorie</a>
+<a class="btn btn-success" asp-controller="Departments" asp-action="New">Add a new department</a>
 <br />
 

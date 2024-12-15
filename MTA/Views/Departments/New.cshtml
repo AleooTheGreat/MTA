@@ -2,23 +2,23 @@
 
 
 @{
-    ViewBag.Title = "Adaugare Departament";
+    ViewBag.Title = "Add department";
 }
 
 
-<h2>Adaugare Departament</h2>
+<h2>Add department</h2>
 
 <form asp-action="New" asp-controller="Departments" method="post">
 
     <div class="form-group">
-        <label asp-for="DepartmentName" class="form-label">Denumire categorie</label>
+        <label asp-for="DepartmentName" class="form-label">Department name</label>
         <br />
         <input asp-for="DepartmentName" class="form-control" />
         <span asp-validation-for="DepartmentName" class="text-danger"></span>
     </div>
 
     <br /><br />
-    <button class="btn btn-success" type="submit">Adauga categorie</button>
+    <button class="btn btn-success" type="submit">Add department</button>
 </form>
 
 

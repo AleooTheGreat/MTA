@@ -7,10 +7,9 @@ namespace MTA.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Numele categoriei este obligatoriu")]
+        [Required(ErrorMessage = "The department name is mandatory!")]
         public string DepartmentName { get; set; }
 
-        // proprietatea virtuala - dintr-o categorie fac parte mai multe articole
         public virtual ICollection<Project>? Projects { get; set; }
     }
 

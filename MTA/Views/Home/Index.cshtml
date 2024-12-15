@@ -7,7 +7,7 @@
                 <div class="col-md-8">
                     <h1 class="font-roboto display-5 fw-bold">@Html.Raw(ViewBag.FirstProject.Title)</h1>
                     <div class="font-montserrat mb-3 truncate">@Html.Raw(ViewBag.FirstProject.Content)</div>
-                    <a href="/Projects/Show/@ViewBag.FirstProject.Id" class="btn btn-outline-success">Vezi articolul</a>
+                    <a href="/Projects/Show/@ViewBag.FirstProject.Id" class="btn btn-outline-success">Show project</a>
                 </div>
                 <div class="col-md-4">
                     <img src="https://icon-library.com/images/newspaper-png-icon/newspaper-png-icon-15.jpg" class="img-fluid align-items-center justify-content-center" />
@@ -33,7 +33,7 @@
                     <div class="font-montserrat truncate">@Html.Raw(project.Content)</div>
                 </div>
                 <div class="card-footer">
-                    <a class="btn btn-outline-success" href="/Projects/Show/@project.Id">Vezi Articolul</a>
+                    <a class="btn btn-outline-success" href="/Projects/Show/@project.Id">Show project</a>
                 </div>
             </div>
         </div>

@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MTA.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Marshall")]
     public class DepartmentsController : Controller
     {
-        // PASUL 10: useri si roluri 
+        //Users and rols
 
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -57,7 +57,7 @@ namespace MTA.Controllers
             {
                 db.Departments.Add(cat);
                 db.SaveChanges();
-                TempData["message"] = "Categoria a fost adaugata";
+                TempData["message"] = "The department was added.";
                 return RedirectToAction("Index");
             }
 
@@ -83,7 +83,7 @@ namespace MTA.Controllers
 
                 department.DepartmentName = requestDepartment.DepartmentName;
                 db.SaveChanges();
-                TempData["message"] = "Categoria a fost modificata!";
+                TempData["message"] = "The department was modified!";
                 return RedirectToAction("Index");
             }
             else
@@ -95,8 +95,6 @@ namespace MTA.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            // Category category = db.Categories.Find(id);
-
             Department department = db.Departments.Include("Projects")
                                              .Include("Projects.Alerts")
                                              .Where(c => c.Id == id)
@@ -104,7 +102,7 @@ namespace MTA.Controllers
 
             db.Departments.Remove(department);
 
-            TempData["message"] = "Categoria a fost stearsa";
+            TempData["message"] = "The department was deleted.";
             db.SaveChanges();
             return RedirectToAction("Index");
         }

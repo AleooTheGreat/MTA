@@ -124,8 +124,6 @@ namespace MTA.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
 
-                    // PASUL 9: useri si roluri 
-                    // adaugarea rolului de User la inregistrare
 
                     await _userManager.AddToRoleAsync(user, "User");
 

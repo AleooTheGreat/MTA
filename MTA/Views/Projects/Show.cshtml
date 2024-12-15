@@ -1,9 +1,5 @@
 ﻿@model MTA.Models.Project
 
-
-@* Afisarea unui articol impreuna cu categoria din care face *@
-
-
 @if (TempData["message"] != null)
 {
     <div class="alert @ViewBag.Alert p-3 rounded-3 text-center mb-5">
@@ -22,11 +18,11 @@
     {
         <div class="d-flex flex-row justify-content-between">
 
-            <a class="btn btn-success" asp-controller="Projects" asp-action="Edit" asp-route-id="@Model.Id">Editeaza articol</a>
+            <a class="btn btn-success" asp-controller="Projects" asp-action="Edit" asp-route-id="@Model.Id">Edit project</a>
 
             <form method="post" asp-controller="Projects" asp-action="Delete" asp-route-id="@Model.Id">
 
-                <button class="btn btn-danger" type="submit">Sterge articol</button>
+                <button class="btn btn-danger" type="submit">Delete project</button>
 
             </form>
 
@@ -38,7 +34,7 @@
         <div class="d-flex flex-row justify-content-center p-3 border-1 border-top">
             <div>
                 <select name="MissionId" class="form-control">
-                    <option selected>Adauga acest articol intr-o colectie</option>
+                    <option selected>Asign this project to a mission</option>
                     @foreach (var mission in ViewBag.UserMissions)
                     {
                         <option value="@mission.Id">@mission.Name</option>
@@ -55,8 +51,6 @@
 
 <br />
 <br />
-
-@* Afisare comentarii impreuna cu butoanele de editare si stergere *@
 
 @foreach (var alert in Model.Alerts)
 {
@@ -80,14 +74,14 @@
                     <div class="d-flex">
                         <div>
                             <a class="btn btn-outline-primary" asp-controller="Alerts" asp-action="Edit" asp-route-id="@alert.Id">
-                                <i class="bi bi-pencil-square"></i> Editeaza
+                                <i class="bi bi-pencil-square"></i> Edit
                             </a>
 
                         </div>
                         <div>
                             <form method="post" asp-controller="Alerts" asp-action="Delete" asp-route-id="@alert.Id">
 
-                                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
+                                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Delete</button>
 
                             </form>
                         </div>
@@ -105,8 +99,6 @@
 }
 
 
-@* Afisarea formularului in care se poate adauga un comentariu *@
-
 <div class="container">
 
     <div class="row">
@@ -123,7 +115,7 @@
 
                         <input type="hidden" name="ProjectId" value="@Model.Id" />
 
-                        <label>Continut comentariu</label>
+                        <label>Alert content</label>
                         <br />
 
                         <textarea class="form-control" name="Content"></textarea>
@@ -131,7 +123,7 @@
                         <span asp-validation-for="Content" class="text-danger"></span>
                         <br /><br />
 
-                        <button class="btn btn-success" type="submit">Adauga comentariul</button>
+                        <button class="btn btn-success" type="submit">Add alert</button>
 
                     </div>
 

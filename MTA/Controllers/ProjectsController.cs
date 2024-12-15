@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using static MTA.Models.ProjectMissions;
 using Ganss.Xss;
-using static MTA.Models.ProjectMissions;
 
 
 namespace MTA.Controllers
@@ -16,7 +15,7 @@ namespace MTA.Controllers
     [Authorize]
     public class ProjectsController : Controller
     {
-        // PASUL 10: useri si roluri 
+        //Configure roles and users 
 
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -32,19 +31,14 @@ namespace MTA.Controllers
             _roleManager = roleManager;
         }
 
-        // Se afiseaza lista tuturor articolelor impreuna cu categoria 
-        // din care fac parte
-        // Pentru fiecare articol se afiseaza si userul care a postat articolul respectiv
-        // [HttpGet] care se executa implicit
-        [Authorize(Roles = "User,Editor,Admin")]
+        
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Index()
         {
             var projects = db.Projects.Include("Department")
                                       .Include("User")
                                       .OrderByDescending(a => a.Date);
 
-            // ViewBag.OriceDenumireSugestiva
-            // ViewBag.Articles = articles;
 
             if (TempData.ContainsKey("message"))
             {
@@ -52,36 +46,31 @@ namespace MTA.Controllers
                 ViewBag.Alert = TempData["messageType"];
             }
 
-            // MOTOR DE CAUTARE
+            //Basic search engine
 
             var search = "";
 
             if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
             {
-                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // eliminam spatiile libere 
+                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim();// If you try to be funny you can't ;)
 
-                // Cautare in articol (Title si Content)
                 
                 List<int> projectIds = db.Projects.Where
                                         (
-                                         at => at.Title.Contains(search)
-                                         || at.Content.Contains(search)
-                                        ).Select(a => a.Id).ToList();
+                                         pj => pj.Title.Contains(search)
+                                         || pj.Content.Contains(search)
+                                        ).Select(p => p.Id).ToList();
 
-                // Cautare in comentarii (Content)
+             
                 List<int> projectIdsOfAlertsWithSearchString = db.Alerts
                                         .Where
                                         (
                                          c => c.Content.Contains(search)
                                         ).Select(c => (int)c.ProjectId).ToList();
 
-                // Se formeaza o singura lista formata din toate id-urile selectate anterior
                 List<int> mergedIds = projectIds.Union(projectIdsOfAlertsWithSearchString).ToList();
 
 
-                // Lista articolelor care contin cuvantul cautat
-                // fie in articol -> Title si Content
-                // fie in comentarii -> Content
                 projects = db.Projects.Where(project => mergedIds.Contains(project.Id))
                                       .Include("Department")
                                       .Include("User")
@@ -91,45 +80,25 @@ namespace MTA.Controllers
 
             ViewBag.SearchString = search;
 
-            // AFISARE PAGINATA
-
-            // Alegem sa afisam 3 articole pe pagina
-            int _perPage = 3;
-
-            // Fiind un numar variabil de articole, verificam de fiecare data utilizand 
-            // metoda Count()
+            int _perPage = 5;
 
             int totalItems = projects.Count();
 
-            // Se preia pagina curenta din View-ul asociat
-            // Numarul paginii este valoarea parametrului page din ruta
-            // /Articles/Index?page=valoare
-
             var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
 
-            // Pentru prima pagina offsetul o sa fie zero
-            // Pentru pagina 2 o sa fie 3 
-            // Asadar offsetul este egal cu numarul de articole care au fost deja afisate pe paginile anterioare
             var offset = 0;
 
-            // Se calculeaza offsetul in functie de numarul paginii la care suntem
             if (!currentPage.Equals(0))
             {
                 offset = (currentPage - 1) * _perPage;
             }
 
-            // Se preiau articolele corespunzatoare pentru fiecare pagina la care ne aflam 
-            // in functie de offset
             var paginatedProjects = projects.Skip(offset).Take(_perPage);
 
 
-            // Preluam numarul ultimei pagini
             ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
 
-            // Trimitem articolele cu ajutorul unui ViewBag catre View-ul corespunzator
             ViewBag.Projects = paginatedProjects;
-
-            // DACA AVEM AFISAREA PAGINATA IMPREUNA CU SEARCH
 
             if (search != "")
             {
@@ -143,12 +112,8 @@ namespace MTA.Controllers
             return View();
         }
 
-        // Se afiseaza un singur articol in functie de id-ul sau 
-        // impreuna cu categoria din care face parte
-        // In plus sunt preluate si toate comentariile asociate unui articol
-        // Se afiseaza si userul care a postat articolul respectiv
-        // [HttpGet] se executa implicit implicit
-        public Dictionary<int, int> GetProjectCommentCounts()
+       
+        public Dictionary<int, int> GetProjectAlertCounts()
         {
             var projectCommentCounts = db.Projects
                                          .Include(p => p.Alerts)
@@ -156,23 +121,19 @@ namespace MTA.Controllers
             return projectCommentCounts;
         }
 
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Show(int id)
         {
-            var initialCommentCounts = GetProjectCommentCounts();
+            var initialAlertCounts = GetProjectAlertCounts();
 
-            foreach (Project proj in db.Projects)
+            /*
+             * Debug like a noob :) 
+             * foreach (Project proj in db.Projects)
             {
                 Console.WriteLine($"Project ID: {proj.Id}");
             }
-            Console.WriteLine($"Project ID Cautat: {id}");
-            /*
-            if (id == 0)
-            {
-                id = db.Projects.Select(p => p.Id).FirstOrDefault(); // Pick the first project ID
-                Console.WriteLine($"Project ID Modificat: {id}");
-            }
-            */
+            Console.WriteLine($"Project ID Cautat: {id}");*/
+           
             Project project = db.Projects.Include("Department")
                                          .Include("User")
                                          .Include("Alerts")
@@ -180,9 +141,8 @@ namespace MTA.Controllers
                               .Where(pr => pr.Id == id)
                               .First();
 
-            // Adaugam bookmark-urile utilizatorului pentru dropdown
             ViewBag.UserMissions = db.Missions
-                                      .Where(b => b.UserId == _userManager.GetUserId(User))
+                                      .Where(m => m.UserId == _userManager.GetUserId(User))
                                       .ToList();
 
             SetAccessRights();
@@ -193,28 +153,19 @@ namespace MTA.Controllers
                 ViewBag.Alert = TempData["messageType"];
             }
 
-            ViewBag.InitialCommentCounts = initialCommentCounts;
+            ViewBag.InitialCommentCounts = initialAlertCounts;
 
             return View(project);
         }
 
-
-        // Se afiseaza formularul in care se vor completa datele unui articol
-        // impreuna cu selectarea categoriei din care face parte
-        // HttpGet implicit
-
-
-        // Adaugarea unui comentariu asociat unui articol in baza de date
-        // Toate rolurile pot adauga comentarii in baza de date
         [HttpPost]
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Show([FromForm] Alert alert)
         {
-            var initialCommentCounts = GetProjectCommentCounts();
+            var initialAlertCounts = GetProjectAlertCounts();
 
             alert.Date = DateTime.Now;
 
-            // preluam Id-ul utilizatorului care posteaza comentariul
             alert.UserId = _userManager.GetUserId(User);
 
             if (ModelState.IsValid)
@@ -229,13 +180,12 @@ namespace MTA.Controllers
                 db.Alerts.Add(alert);
                 db.SaveChanges();
 
-                var updatedCommentCounts = GetProjectCommentCounts();
+                var updatedAlertCounts = GetProjectAlertCounts();
 
-                // Find the project with a different comment count
-                var projectIdWithDifferentCommentCount = updatedCommentCounts
-                    .FirstOrDefault(kvp => kvp.Value != initialCommentCounts[kvp.Key]).Key;
+                var projectIdWithDifferentAlertCount = updatedAlertCounts
+                    .FirstOrDefault(kvp => kvp.Value != initialAlertCounts[kvp.Key]).Key;
 
-                return Redirect("/Projects/Show/" + projectIdWithDifferentCommentCount);
+                return Redirect("/Projects/Show/" + projectIdWithDifferentAlertCount);
             }
             else
             {
@@ -246,7 +196,6 @@ namespace MTA.Controllers
                                          .Where(pr => pr.Id == alert.ProjectId)
                                          .First();
 
-                // Adaugam bookmark-urile utilizatorului pentru dropdown
                 ViewBag.UserMissions = db.Missions
                                           .Where(b => b.UserId == _userManager.GetUserId(User))
                                           .ToList();
@@ -259,71 +208,61 @@ namespace MTA.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult AddMission([FromForm] ProjectMission projectMission)
         {
-            // Daca modelul este valid
+            
             if (ModelState.IsValid)
             {
-                // Verificam daca avem deja articolul in colectie
                 if (db.ProjectMissions
-                    .Where(ab => ab.ProjectId == projectMission.ProjectId)
-                    .Where(ab => ab.MissionId == projectMission.MissionId)
+                    .Where(pm => pm.ProjectId == projectMission.ProjectId)
+                    .Where(pm => pm.MissionId == projectMission.MissionId)
                     .Count() > 0)
                 {
-                    TempData["message"] = "Acest articol este deja adaugat in colectie";
+                    TempData["message"] = "This project was already added in the mission!";
                     TempData["messageType"] = "alert-danger";
                 }
                 else
                 {
-                    // Adaugam asocierea intre articol si bookmark 
+                    
                     db.ProjectMissions.Add(projectMission);
-                    // Salvam modificarile
+                   
                     db.SaveChanges();
 
-                    // Adaugam un mesaj de succes
-                    TempData["message"] = "Articolul a fost adaugat in colectia selectata";
+                    TempData["message"] = "The project was already added to the selected mission!";
                     TempData["messageType"] = "alert-success";
                 }
 
             }
             else
             {
-                TempData["message"] = "Nu s-a putut adauga articolul in colectie";
+                TempData["message"] = "The project could not be added to the mission!";
                 TempData["messageType"] = "alert-danger";
             }
 
-            // Ne intoarcem la pagina articolului
             return Redirect("/Projects/Show/" + projectMission.ProjectId);
         }
 
 
-        // Se afiseaza formularul in care se vor completa datele unui articol
-        // impreuna cu selectarea categoriei din care face parte
-        // Doar utilizatorii cu rolul de Editor si Admin pot adauga articole in platforma
-        // [HttpGet] - care se executa implicit
-
-        [Authorize(Roles = "Editor,Admin")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult New()
         {
             Project project = new Project();
 
-            project.Categ = GetAllDepartments();
+            project.Dept = GetAllDepartments();
 
             return View(project);
         }
 
-        // Se adauga articolul in baza de date
-        // Doar utilizatorii cu rolul Editor si Admin pot adauga articole in platforma
+        
         [HttpPost]
-        [Authorize(Roles = "Editor,Admin")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult New(Project project)
         {
             var sanitizer = new HtmlSanitizer();
 
             project.Date = DateTime.Now;
 
-            // preluam Id-ul utilizatorului care posteaza articolul
             project.UserId = _userManager.GetUserId(User);
 
             if(ModelState.IsValid)
@@ -332,26 +271,18 @@ namespace MTA.Controllers
 
                 db.Projects.Add(project);
                 db.SaveChanges();
-                TempData["message"] = "Articolul a fost adaugat";
+                TempData["message"] = "The project was added!";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
             else
             {
-                project.Categ = GetAllDepartments();
+                project.Dept = GetAllDepartments();
                 return View(project);
             }
         }
 
-        // Se editeaza un articol existent in baza de date impreuna cu categoria din care face parte
-        // Categoria se selecteaza dintr-un dropdown
-        // Se afiseaza formularul impreuna cu datele aferente articolului din baza de date
-        // Doar utilizatorii cu rolul de Editor si Admin pot edita articole
-        // Adminii pot edita orice articol din baza de date
-        // Editorii pot edita doar articolele proprii (cele pe care ei le-au postat)
-        // [HttpGet] - se executa implicit
-
-        [Authorize(Roles = "Editor,Admin")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult Edit(int id)
         {
 
@@ -359,26 +290,24 @@ namespace MTA.Controllers
                                          .Where(pr => pr.Id == id)
                                          .First();
 
-            project.Categ = GetAllDepartments();
+            project.Dept = GetAllDepartments();
 
             if ((project.UserId == _userManager.GetUserId(User)) || 
-                User.IsInRole("Admin"))
+                User.IsInRole("Marshall"))
             {
                 return View(project);
             }
             else
             {    
                 
-                TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unui articol care nu va apartine";
+                TempData["message"] = "You can not modify an project that is not yours!";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index");
             }  
         }
 
-        // Se adauga articolul modificat in baza de date
-        // Se verifica rolul utilizatorilor care au dreptul sa editeze (Editor si Admin)
         [HttpPost]
-        [Authorize(Roles = "Editor,Admin")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult Edit(int id, Project requestProject)
         {
             var sanitizer = new HtmlSanitizer();
@@ -388,7 +317,7 @@ namespace MTA.Controllers
             if(ModelState.IsValid)
             {
                 if((project.UserId == _userManager.GetUserId(User)) 
-                    || User.IsInRole("Admin"))
+                    || User.IsInRole("Marshall"))
                 {
                     project.Title = requestProject.Title;
 
@@ -398,115 +327,86 @@ namespace MTA.Controllers
 
                     project.Date = DateTime.Now;
                     project.DepartmentId = requestProject.DepartmentId;
-                    TempData["message"] = "Articolul a fost modificat";
+                    TempData["message"] = "The project was modified!";
                     TempData["messageType"] = "alert-success";
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 else
                 {                    
-                    TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unui articol care nu va apartine";
+                    TempData["message"] = "You can not modify this project as it is not your!";
                     TempData["messageType"] = "alert-danger";
                     return RedirectToAction("Index");
                 }
             }
             else
             {
-                requestProject.Categ = GetAllDepartments();
+                requestProject.Dept = GetAllDepartments();
                 return View(requestProject);
             }
         }
 
-
-        // Se sterge un articol din baza de date 
-        // Utilizatorii cu rolul de Editor sau Admin pot sterge articole
-        // Editorii pot sterge doar articolele publicate de ei
-        // Adminii pot sterge orice articol de baza de date
-
         [HttpPost]
-        [Authorize(Roles = "Editor,Admin")]
+        [Authorize(Roles = "Commander,Marshall")]
         public ActionResult Delete(int id)
         {
-            // Article article = db.Articles.Find(id);
 
             Project project = db.Projects.Include("Alerts")
                                          .Where(pr => pr.Id == id)
                                          .First();
 
             if ((project.UserId == _userManager.GetUserId(User))
-                    || User.IsInRole("Admin"))
+                    || User.IsInRole("Marshall"))
             {
                 db.Projects.Remove(project);
                 db.SaveChanges();
-                TempData["message"] = "Articolul a fost sters";
+                TempData["message"] = "The project was deleted";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa stergeti un articol care nu va apartine";
+                TempData["message"] = "You can not delete this project as it is not yours.";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index");
             }    
         }
 
-        // Conditiile de afisare pentru butoanele de editare si stergere
-        // butoanele aflate in view-uri
+       
         private void SetAccessRights()
         {
             ViewBag.AfisareButoane = false;
 
-            if (User.IsInRole("Editor"))
+            if (User.IsInRole("Commander"))
             {
                 ViewBag.AfisareButoane = true;
             }
 
             ViewBag.UserCurent = _userManager.GetUserId(User);
 
-            ViewBag.EsteAdmin = User.IsInRole("Admin");
+            ViewBag.EsteAdmin = User.IsInRole("Marshall");
         }
 
         [NonAction]
         public IEnumerable<SelectListItem> GetAllDepartments()
         {
-            // generam o lista de tipul SelectListItem fara elemente
             var selectList = new List<SelectListItem>();
 
-            // extragem toate categoriile din baza de date
-            var departments = from cat in db.Departments
-                              select cat;
+            var departments = from dep in db.Departments
+                              select dep;
 
-            // iteram prin categorii
             foreach (var department in departments)
             {
-                // adaugam in lista elementele necesare pentru dropdown
-                // id-ul categoriei si denumirea acesteia
                 selectList.Add(new SelectListItem
                 {
                     Value = department.Id.ToString(),
                     Text = department.DepartmentName
                 });
             }
-            /* Sau se poate implementa astfel: 
-             * 
-            foreach (var category in categories)
-            {
-                var listItem = new SelectListItem();
-                listItem.Value = category.Id.ToString();
-                listItem.Text = category.CategoryName;
-
-                selectList.Add(listItem);
-             }*/
-
-
-            // returnam lista de categorii
+           
             return selectList;
         }
 
-        // Metoda utilizata pentru exemplificarea Layout-ului
-        // Am adaugat un nou Layout in Views -> Shared -> numit _LayoutNou.cshtml
-        // Aceasta metoda are un View asociat care utilizeaza noul layout creat
-        // in locul celui default generat de framework numit _Layout.cshtml
         public IActionResult IndexNou()
         {
             return View();

@@ -1,6 +1,6 @@
 ﻿
 <br />
-<h2 class="text-center">Afisare articole</h2>
+<h2 class="text-center">Show project</h2>
 
 <br />
 
@@ -13,7 +13,7 @@
 
 <br />
 
-@* Motorul de cautare *@
+@* Search engine *@
 <form method="GET">
     <div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="Search topics or keywords" name="search"
@@ -29,15 +29,13 @@
 
         <partial name="ProjectInfo" model="project"></partial>
 
-        <a class="btn btn-success" asp-controller="Projects" asp-action="Show" asp-route-id="@project.Id">Afisare articol</a>
+        <a class="btn btn-success" asp-controller="Projects" asp-action="Show" asp-route-id="@project.Id">Show project</a>
 
     </div>
 
     <br />
     <br />
 }
-
-@* Afisarea paginata a articolelor *@
 
 <div>
     <nav aria-label="Page navigation example">

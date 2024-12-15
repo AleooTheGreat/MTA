@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241215120352_MTA")]
+    [Migration("20241215161128_MTA")]
     partial class MTA
     {
         /// <inheritdoc />

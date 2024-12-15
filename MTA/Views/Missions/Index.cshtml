@@ -12,7 +12,7 @@
 <br />
 
 <a asp-controller="Missions" asp-action="New" class="btn btn-success rounded-pill mb-5">
-    <i class="bi bi-plus"></i> Adăugare misiune
+    <i class="bi bi-plus"></i> Add mission
 </a>
 
 <div class="row">
@@ -29,12 +29,12 @@
 
                         @if (ViewBag.EsteAdmin)
                         {
-                            <div><i class="bi bi-person"> Creat de: </i> @mission.User.UserName</div>
+                            <div><i class="bi bi-person"> Created by: </i> @mission.User.UserName</div>
                         }        
 
                     <br />
 
-                    <a asp-controller="Missions" asp-action="Show" asp-route-id="@mission.Id" class="btn alert-success">Afisare Colectie</a>
+                    <a asp-controller="Missions" asp-action="Show" asp-route-id="@mission.Id" class="btn alert-success">Show mission</a>
 
                 </div>
             </div>

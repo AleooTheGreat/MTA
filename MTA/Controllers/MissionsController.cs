@@ -29,12 +29,7 @@ namespace MTA.Controllers
             _roleManager = roleManager;
         }
 
-
-        // Toti utilizatorii pot vedea Bookmark-urile existente in platforma
-        // Fiecare utilizator vede bookmark-urile pe care le-a creat
-        // Userii cu rolul de Admin pot sa vizualizeze toate bookmark-urile existente
-        // HttpGet - implicit
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -45,7 +40,7 @@ namespace MTA.Controllers
 
             SetAccessRights();
 
-            if (User.IsInRole("User") || User.IsInRole("Editor"))
+            if (User.IsInRole("User") || User.IsInRole("Commander"))
             {
                 var missions = from mission in db.Missions.Include("User")
                                .Where(b => b.UserId == _userManager.GetUserId(User))
@@ -56,7 +51,7 @@ namespace MTA.Controllers
                 return View();
             }
             else 
-            if(User.IsInRole("Admin"))
+            if(User.IsInRole("Marshall"))
             {
                 var missions = from mission in db.Missions.Include("User")
                                 select mission;
@@ -68,21 +63,20 @@ namespace MTA.Controllers
 
             else
             {
-                TempData["message"] = "Nu aveti drepturi asupra colectiei";
+                TempData["message"] = "You do not have access to this mission!";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index", "Projects");
             }
             
         }
 
-        // Afisarea tuturor articolelor pe care utilizatorul le-a salvat in 
-        // bookmark-ul sau 
-        [Authorize(Roles = "User,Editor,Admin")]
+       
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Show(int id)
         {
             SetAccessRights();
 
-            if (User.IsInRole("User") || User.IsInRole("Editor"))
+            if (User.IsInRole("User") || User.IsInRole("Commander"))
             {
                 var missions = db.Missions
                                   .Include("ProjectMissions.Project.Department")
@@ -94,7 +88,7 @@ namespace MTA.Controllers
                 
                 if(missions == null)
                 {
-                    TempData["message"] = "Resursa cautata nu poate fi gasita";
+                    TempData["message"] = "The searched resourse was not found!";
                     TempData["messageType"] = "alert-danger";
                     return RedirectToAction("Index", "Projects");
                 }
@@ -103,7 +97,7 @@ namespace MTA.Controllers
             }
 
             else 
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole("Marshall"))
             {
                 var missions = db.Missions
                                   .Include("ProjectMissions.Project.Department")
@@ -115,7 +109,7 @@ namespace MTA.Controllers
 
                 if (missions == null)
                 {
-                    TempData["message"] = "Resursa cautata nu poate fi gasita";
+                    TempData["message"] = "The searched resourse can not be found!";
                     TempData["messageType"] = "alert-danger";
                     return RedirectToAction("Index", "Projects");
                 }
@@ -126,54 +120,50 @@ namespace MTA.Controllers
 
             else
             {
-                TempData["message"] = "Nu aveti drepturi";
+                TempData["message"] = "You have no rights!";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index", "Projects");
             }  
         }
 
-        // Randarea formularului in care se completeaza datele unui bookmark
-        // [HttpGet] - se executa implicit
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult New()
         {
             return View();
         }
 
-        // Adaugarea bookmark-ului in baza de date
         [HttpPost]
-        [Authorize(Roles = "User,Editor,Admin")]
-        public ActionResult New(Mission bm)
+        [Authorize(Roles = "User,Commander,Marshall")]
+        public ActionResult New(Mission m)
         {
-            bm.UserId = _userManager.GetUserId(User);
+            m.UserId = _userManager.GetUserId(User);
 
             if (ModelState.IsValid)
             {
-                db.Missions.Add(bm);
+                db.Missions.Add(m);
                 db.SaveChanges();
-                TempData["message"] = "Colectia a fost adaugata";
+                TempData["message"] = "The mission was added!";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
 
             else
             {
-                return View(bm);
+                return View(m);
             }
         }
 
 
-        // Conditiile de afisare a butoanelor de editare si stergere
         private void SetAccessRights()
         {
             ViewBag.AfisareButoane = false;
 
-            if (User.IsInRole("Editor") || User.IsInRole("User"))
+            if (User.IsInRole("Commander") || User.IsInRole("User"))
             {
                 ViewBag.AfisareButoane = true;
             }
 
-            ViewBag.EsteAdmin = User.IsInRole("Admin");
+            ViewBag.EsteAdmin = User.IsInRole("Marshall");
 
             ViewBag.UserCurent = _userManager.GetUserId(User);
         }
