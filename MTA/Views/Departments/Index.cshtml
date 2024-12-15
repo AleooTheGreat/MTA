@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewBag.Title = "Lista departamente";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />  
+
+@if (TempData.ContainsKey("message"))
+{
+    <h1>@ViewBag.message</h1>
+}
+
+<br />
+
+@foreach (MTA.Models.Department department in ViewBag.Departments)
+{
+    <div class="form-group">
+        <label asp-for="@department.DepartmentName" class="form-label">Denumire categorie</label>
+        <div><i class="bi bi-globe"></i> @department.DepartmentName</div>
+    </div>
+    <br />
+    <a class="btn alert-success" asp-controller="Departments" asp-action="Show" asp-route-id="@department.Id">Afisare categorie</a>
+    <a class="btn alert-success" asp-controller="Departments" asp-action="Edit" asp-route-id="@department.Id">Editare categorie</a>
+    <br />
+    <br />
+
+}
+<br />
+<a class="btn btn-success" asp-controller="Departments" asp-action="New">Adauga o noua categorie</a>
+<br />
+

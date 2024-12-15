@@ -1,0 +1,24 @@
+﻿@model MTA.Models.Department
+
+
+@{
+    ViewBag.Title = "Adaugare Departament";
+}
+
+
+<h2>Adaugare Departament</h2>
+
+<form asp-action="New" asp-controller="Departments" method="post">
+
+    <div class="form-group">
+        <label asp-for="DepartmentName" class="form-label">Denumire categorie</label>
+        <br />
+        <input asp-for="DepartmentName" class="form-control" />
+        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+    </div>
+
+    <br /><br />
+    <button class="btn btn-success" type="submit">Adauga categorie</button>
+</form>
+
+
