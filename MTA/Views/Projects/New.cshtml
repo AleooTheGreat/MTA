@@ -1,7 +1,7 @@
 ﻿@model MTA.Models.Project
 
 
-<h2 class="text-center mt-5">Adaugare articol</h2>
+<h2 class="text-center mt-5">Add project</h2>
 
 <br />
 
@@ -14,41 +14,38 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="form-group">
-                    <label asp-for="Title" class="form-label">Titlu Articol</label>
+                    <label asp-for="Title" class="form-label">Project title</label>
                     <br />
                     <input asp-for="Title" class="form-control" />
 
-                    <!-- Mesaj de validare pentru titlu -->
                     <span asp-validation-for="Title" class="text-danger"></span>
 
                     <br /><br />
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Content" class="form-label">Continut Articol</label>
+                    <label asp-for="Content" class="form-label">Project content</label>
                     <br />
                     <textarea asp-for="Content" class="form-control summernote"></textarea>
 
-                    <!-- Mesaj de validare pentru continut -->
                     <span asp-validation-for="Content" class="text-danger"></span>
 
                     <br /><br />
                 </div>
 
                 <div class="form-group">
-                    <label for="DepartmentId">Selectati categoria</label>
+                    <label for="DepartmentId">Select department</label>
                     <br />
-                    <select asp-for="DepartmentId" asp-items="Model.Categ" class="form-control">
-                        <option value="">Selectati categoria</option>
+                    <select asp-for="DepartmentId" asp-items="Model.Dept" class="form-control">
+                        <option value="">Select department</option>
                     </select>
 
-                    <!-- Mesaj de validare pentru CategoryId -->
                     <span asp-validation-for="DepartmentId" class="text-danger"></span>
 
                     <br />
                 </div>
                 <br />
-                <button class="btn btn-success" type="submit">Adauga articol</button>
+                <button class="btn btn-success" type="submit">Add project</button>
 
             </form>
         </div>

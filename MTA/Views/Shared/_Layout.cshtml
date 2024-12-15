@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MTA.styles.css" asp-append-version="true" />
 
-    <!-- se include summernote css -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
 
 </head>
@@ -25,45 +24,45 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        @if(User.IsInRole("Admin"))
+                        @if (User.IsInRole("Marshall"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Afisare articole</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Show projects</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="New">Adaugare articol</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="New">Add project</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Departments" asp-action="Index">Afisare categorii</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Departments" asp-action="Index">Show departments</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Afisare utilizatori</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Show personnel</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Missions" asp-action="Index">Colectii</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Missions" asp-action="Index">Missions</a>
                             </li>
                         }
 
-                        @if (User.IsInRole("Editor"))
+                        @if (User.IsInRole("Commander"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Afisare articole</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Show projects</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="New">Adaugare articol</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="New">Add project</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Missions" asp-action="Index">Colectii</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Missions" asp-action="Index">Missions</a>
                             </li>
                         }            
 
                         @if (User.IsInRole("User"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Afisare articole</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Show projects</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Missions" asp-action="Index">Colectii</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Missions" asp-action="Index">Missions</a>
                             </li>
                         }
 

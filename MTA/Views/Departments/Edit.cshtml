@@ -2,7 +2,7 @@
 
 
 @{
-    ViewBag.Title = "Editare Departament";
+    ViewBag.Title = "Edit department";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -11,7 +11,7 @@
 <form asp-action="Edit" asp-controller="Departments" asp-route-id="@Model.Id" method="post">
 
     <div class="form-group">
-        <label asp-for="DepartmentName" class="form-label">Denumire departament</label>
+        <label asp-for="DepartmentName" class="form-label">Department name</label>
         <br />
         <input asp-for="DepartmentName" class="form-control" />
         <span asp-validation-for="DepartmentName" class="text-danger"></span>
@@ -19,7 +19,7 @@
 
     <br />
 
-    <button class="btn btn-success" type="submit">Modifică depatamentul</button>
+    <button class="btn btn-success" type="submit">Modify department</button>
 
 </form>
 

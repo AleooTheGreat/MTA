@@ -6,11 +6,11 @@ namespace MTA.Validations
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if (value is string stringValue && stringValue.Length < 200)
+            if (value is string stringValue && stringValue.Length < 100)
             {
                 return ValidationResult.Success;
             }
-            return new ValidationResult("Continutul trebuie sa fie sub 200 de caractere");
+            return new ValidationResult("The content should less than 100");
         }
     }
 }

@@ -15,59 +15,49 @@ namespace MTA.Models
             serviceProvider.GetRequiredService
             <DbContextOptions<ApplicationDbContext>>()))
             {
-                // Verificam daca in baza de date exista cel putin un rol
-                // insemnand ca a fost rulat codul
-                // De aceea facem return pentru a nu insera rolurile inca o data
-                // Acesta metoda trebuie sa se execute o singura data
+                
                 if (context.Roles.Any())
                 {
-                    return; // baza de date contine deja roluri
+                    return; 
                 }
 
 
-                // CREAREA ROLURILOR IN BD
-                // daca nu contine roluri, acestea se vor crea
-
                 context.Roles.AddRange(
-                new IdentityRole { Id = "2c5e174e-3b0e-446f-86af-483d56fd7210", Name = "Admin", NormalizedName = "Admin".ToUpper() },
-                new IdentityRole { Id = "2c5e174e-3b0e-446f-86af-483d56fd7211", Name = "Editor", NormalizedName = "Editor".ToUpper() },
+                new IdentityRole { Id = "2c5e174e-3b0e-446f-86af-483d56fd7210", Name = "Marshall", NormalizedName = "Marshall".ToUpper() },
+                new IdentityRole { Id = "2c5e174e-3b0e-446f-86af-483d56fd7211", Name = "Commander", NormalizedName = "Commander".ToUpper() },
                 new IdentityRole { Id = "2c5e174e-3b0e-446f-86af-483d56fd7212", Name = "User", NormalizedName = "User".ToUpper() }
                 );
 
-                // o noua instanta pe care o vom utiliza pentru crearea parolelor utilizatorilor
-                // parolele sunt de tip hash
-
+               
                 var hasher = new PasswordHasher<ApplicationUser>();
 
 
-                // CREAREA USERILOR IN BD
-                // Se creeaza cate un user pentru fiecare rol
                 context.Users.AddRange(
                 new ApplicationUser
                 {
-                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb0", // primary key
-                    UserName = "admin@test.com",
+                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb0", 
+                    UserName = "marshall@test.com",
                     EmailConfirmed = true,
-                    NormalizedEmail = "ADMIN@TEST.COM",
-                    Email = "admin@test.com",
-                    NormalizedUserName = "ADMIN@TEST.COM",
-                    PasswordHash = hasher.HashPassword(null, "Admin1!")
+                    NormalizedEmail = "MARSHALL@TEST.COM",
+                    Email = "marshall@test.com",
+                    NormalizedUserName = "MARSHALL@TEST.COM",
+                    PasswordHash = hasher.HashPassword(null, "Marshall1!")
                 },
 
                 new ApplicationUser
                 {
-                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb1", // primary key
-                    UserName = "editor@test.com",
+                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb1",
+                    UserName = "commander@test.com",
                     EmailConfirmed = true,
-                    NormalizedEmail = "EDITOR@TEST.COM",
-                    Email = "editor@test.com",
-                    NormalizedUserName = "EDITOR@TEST.COM",
-                    PasswordHash = hasher.HashPassword(null, "Editor1!")
+                    NormalizedEmail = "COMMANDER@TEST.COM",
+                    Email = "commander@test.com",
+                    NormalizedUserName = "COMMANDER@TEST.COM",
+                    PasswordHash = hasher.HashPassword(null, "Commander1!")
                 },
 
                 new ApplicationUser
                 {
-                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb2", // primary key
+                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb2", 
                     UserName = "user@test.com",
                     EmailConfirmed = true,
                     NormalizedEmail = "USER@TEST.COM",
@@ -78,7 +68,6 @@ namespace MTA.Models
                 );
 
 
-                // ASOCIEREA USER-ROLE
                 context.UserRoles.AddRange(
                 new IdentityUserRole<string>
                 {
