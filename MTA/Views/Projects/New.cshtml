@@ -1,11 +1,10 @@
 ﻿@model MTA.Models.Project
 
-
-<h2 class="text-center mt-5">Add project</h2>
+<h2 class="text-center mt-5" style="color: red;">Add project</h2>
 
 <br />
 
-<div class="container mt-5">
+<div class="container mt-5" style="background-color: #f8f9fa; color: #000000;">
     <div class="row">
         <div class="col-6 offset-3">
 
@@ -26,7 +25,7 @@
                 <div class="form-group">
                     <label asp-for="Content" class="form-label">Project content</label>
                     <br />
-                    <textarea asp-for="Content" class="form-control summernote"></textarea>
+                    <textarea asp-for="Content" class="form-control summernote white-background"></textarea>
 
                     <span asp-validation-for="Content" class="text-danger"></span>
 
@@ -51,5 +50,3 @@
         </div>
     </div>
 </div>
-
-
