@@ -22,6 +22,13 @@ namespace MTA.Models
 
         public DateTime Date { get; set; }
 
+        [Required(ErrorMessage = "Start date is mandatory!")]
+        public DateTime StartDate { get; set; }
+
+        [Required(ErrorMessage = "End date is mandatory!")]
+        [DateGreaterThan("StartDate", ErrorMessage = "End date must be greater than start date!")]
+        public DateTime EndDate { get; set; }
+
         [Required(ErrorMessage = "The department is mandatory!")]
         public int? DepartmentId { get; set; }
 

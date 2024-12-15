@@ -249,6 +249,8 @@ namespace MTA.Controllers
         {
             Project project = new Project();
 
+            project.StartDate = DateTime.Today;
+            project.EndDate = DateTime.Today;
             project.Dept = GetAllDepartments();
 
             return View(project);
@@ -262,6 +264,8 @@ namespace MTA.Controllers
             var sanitizer = new HtmlSanitizer();
 
             project.Date = DateTime.Now;
+            project.StartDate = project.StartDate == DateTime.MinValue ? DateTime.Today : project.StartDate;
+            project.EndDate = project.EndDate == DateTime.MinValue ? DateTime.Today : project.EndDate;
 
             project.UserId = _userManager.GetUserId(User);
 
@@ -289,6 +293,11 @@ namespace MTA.Controllers
             Project project = db.Projects.Include("Department")
                                          .Where(pr => pr.Id == id)
                                          .First();
+
+            if (project.StartDate == DateTime.MinValue)
+            {
+                project.StartDate = DateTime.Today;
+            }
 
             project.Dept = GetAllDepartments();
 
@@ -325,8 +334,12 @@ namespace MTA.Controllers
 
                     project.Content = requestProject.Content;
 
-                    project.Date = DateTime.Now;
+                    project.StartDate = requestProject.StartDate == DateTime.MinValue ? DateTime.Today : requestProject.StartDate; 
+                    project.EndDate = requestProject.EndDate;
+
                     project.DepartmentId = requestProject.DepartmentId;
+                    project.Date = DateTime.Now;
+
                     TempData["message"] = "The project was modified!";
                     TempData["messageType"] = "alert-success";
                     db.SaveChanges();
@@ -406,6 +419,45 @@ namespace MTA.Controllers
            
             return selectList;
         }
+
+        [HttpPost]
+        public IActionResult UploadImage(IFormFile file)
+        {
+            if (file != null && file.Length > 0)
+            {
+                try
+                {
+                    // Define the upload path (wwwroot/Images)
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    // Generate a unique file name
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    // Save the file to the server
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    // Generate the URL to return
+                    var imageUrl = Url.Content("~/Images/" + uniqueFileName);
+                    return Json(imageUrl);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error saving file: " + ex.Message);
+                    return BadRequest("Image upload failed.");
+                }
+            }
+
+            return BadRequest("Invalid file.");
+        }
+
+
+
 
         public IActionResult IndexNou()
         {
