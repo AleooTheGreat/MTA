@@ -148,15 +148,31 @@ namespace MTA.Controllers
         // In plus sunt preluate si toate comentariile asociate unui articol
         // Se afiseaza si userul care a postat articolul respectiv
         // [HttpGet] se executa implicit implicit
+        public Dictionary<int, int> GetProjectCommentCounts()
+        {
+            var projectCommentCounts = db.Projects
+                                         .Include(p => p.Alerts)
+                                         .ToDictionary(p => p.Id, p => p.Alerts.Count);
+            return projectCommentCounts;
+        }
+
         [Authorize(Roles = "User,Editor,Admin")]
         public IActionResult Show(int id)
         {
+            var initialCommentCounts = GetProjectCommentCounts();
 
             foreach (Project proj in db.Projects)
             {
                 Console.WriteLine($"Project ID: {proj.Id}");
             }
             Console.WriteLine($"Project ID Cautat: {id}");
+            /*
+            if (id == 0)
+            {
+                id = db.Projects.Select(p => p.Id).FirstOrDefault(); // Pick the first project ID
+                Console.WriteLine($"Project ID Modificat: {id}");
+            }
+            */
             Project project = db.Projects.Include("Department")
                                          .Include("User")
                                          .Include("Alerts")
@@ -177,8 +193,11 @@ namespace MTA.Controllers
                 ViewBag.Alert = TempData["messageType"];
             }
 
+            ViewBag.InitialCommentCounts = initialCommentCounts;
+
             return View(project);
         }
+
 
         // Se afiseaza formularul in care se vor completa datele unui articol
         // impreuna cu selectarea categoriei din care face parte
@@ -191,6 +210,8 @@ namespace MTA.Controllers
         [Authorize(Roles = "User,Editor,Admin")]
         public IActionResult Show([FromForm] Alert alert)
         {
+            var initialCommentCounts = GetProjectCommentCounts();
+
             alert.Date = DateTime.Now;
 
             // preluam Id-ul utilizatorului care posteaza comentariul
@@ -207,9 +228,16 @@ namespace MTA.Controllers
 
                 db.Alerts.Add(alert);
                 db.SaveChanges();
-                return Redirect("/Projects/Show/" + alert.Project);
+
+                var updatedCommentCounts = GetProjectCommentCounts();
+
+                // Find the project with a different comment count
+                var projectIdWithDifferentCommentCount = updatedCommentCounts
+                    .FirstOrDefault(kvp => kvp.Value != initialCommentCounts[kvp.Key]).Key;
+
+                return Redirect("/Projects/Show/" + projectIdWithDifferentCommentCount);
             }
-            else 
+            else
             {
                 Project pr = db.Projects.Include("Department")
                                          .Include("User")
@@ -217,8 +245,6 @@ namespace MTA.Controllers
                                          .Include("Alerts.User")
                                          .Where(pr => pr.Id == alert.ProjectId)
                                          .First();
-
-                //return Redirect("/Projects/Show/" + art.Id);
 
                 // Adaugam bookmark-urile utilizatorului pentru dropdown
                 ViewBag.UserMissions = db.Missions
@@ -230,6 +256,7 @@ namespace MTA.Controllers
                 return View(pr);
             }
         }
+
 
         [HttpPost]
         [Authorize(Roles = "User,Editor,Admin")]
