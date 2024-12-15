@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using static MTA.Models.ProjectMissions;
 using Ganss.Xss;
-using static MTA.Models.ProjectMissions;
 
 
 namespace MTA.Controllers
