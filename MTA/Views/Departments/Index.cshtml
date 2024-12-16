@@ -1,32 +1,53 @@
-﻿
-@{
-    ViewBag.Title = "Department list";
+﻿@{
+    ViewBag.Title = "Department List";
 }
 
-<h2>@ViewBag.Title</h2>
-<br />  
+<h2 class="text-center text-uppercase font-weight-bold">@ViewBag.Title</h2>
+<br />
 
 @if (TempData.ContainsKey("message"))
 {
-    <h1>@ViewBag.message</h1>
+    <div class="alert alert-info text-center">
+        <h1>@ViewBag.message</h1>
+    </div>
 }
 
 <br />
 
 @foreach (MTA.Models.Department department in ViewBag.Departments)
 {
-    <div class="form-group">
-        <label asp-for="@department.DepartmentName" class="form-label">Department name</label>
-        <div><i class="bi bi-globe"></i> @department.DepartmentName</div>
+    <div class="card mb-3" style="background-color: #2c3e50; color: #ecf0f1;">
+        <div class="card-body">
+            <h5 class="card-title"><i class="bi bi-globe"></i> @department.DepartmentName</h5>
+            <div class="d-flex justify-content-between">
+                <a class="btn btn-outline-light" asp-controller="Departments" asp-action="Show" asp-route-id="@department.Id">Show Department</a>
+                <a class="btn btn-outline-light" asp-controller="Departments" asp-action="Edit" asp-route-id="@department.Id">Edit Department</a>
+            </div>
+        </div>
     </div>
-    <br />
-    <a class="btn alert-success" asp-controller="Departments" asp-action="Show" asp-route-id="@department.Id">Show department</a>
-    <a class="btn alert-success" asp-controller="Departments" asp-action="Edit" asp-route-id="@department.Id">Edit department</a>
-    <br />
-    <br />
-
 }
+
 <br />
-<a class="btn btn-success" asp-controller="Departments" asp-action="New">Add a new department</a>
+<div class="text-center">
+    <a class="btn btn-success btn-lg" asp-controller="Departments" asp-action="New">Add a New Department</a>
+</div>
 <br />
 
+<style>
+    h2 {
+        font-family: 'Arial Black', sans-serif;
+        letter-spacing: 2px;
+    }
+    .card-title {
+        font-family: 'Courier New', monospace;
+        font-size: 1.5rem;
+    }
+    .btn-outline-light {
+        border-color: #ecf0f1;
+        color: #ecf0f1;
+    }
+    .btn-outline-light:hover {
+        background-color: #ecf0f1;
+        color: #2c3e50;
+    }
+</style>
