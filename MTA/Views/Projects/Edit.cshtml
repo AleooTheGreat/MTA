@@ -1,10 +1,10 @@
 ﻿@model MTA.Models.Project
 
-<h2 class="text-center mt-5">Edit project</h2>
+<h2 class="text-center mt-5" style="color: red;">Edit project</h2>
 
 <br />
 
-<div class="container mt-5">
+<div class="container mt-5" style="background-color: #f8f9fa; color: #000000;">
     <div class="row">
         <div class="col-md-6 offset-3">
 
@@ -13,7 +13,7 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="form-group">
-                    <label asp-for="Title" class="form-label">Project title</label>
+                    <label asp-for="Title" class="form-label" style="color: black;">Project title</label>
                     <br />
                     <input asp-for="Title" class="form-control" />
 
@@ -23,9 +23,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Content" class="form-label">Project content</label>
+                    <label asp-for="Content" class="form-label" style="color: black;">Project content</label>
                     <br />
-                    <textarea asp-for="Content" class="form-control summernote"></textarea>
+                    <textarea asp-for="Content" class="form-control summernote white-background"></textarea>
 
                     <span asp-validation-for="Content" class="text-danger"></span>
 
@@ -33,20 +33,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="StartDate">Start Date</label>
+                    <label asp-for="StartDate" style="color: black;">Start Date</label>
                     <input asp-for="StartDate" type="date" class="form-control" />
                     <span asp-validation-for="StartDate" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="EndDate">End Date</label>
+                    <label asp-for="EndDate" style="color: black;">End Date</label>
                     <input asp-for="EndDate" type="date" class="form-control" />
                     <span asp-validation-for="EndDate" class="text-danger"></span>
                 </div>
 
-
                 <div class="form-group">
-                    <label for="DepartmentId">Select project</label>
+                    <label for="DepartmentId" style="color: black;">Select department</label>
                     <br />
                     <select asp-for="DepartmentId" asp-items="Model.Dept" class="form-control">
                         <option value="">Select department</option>
