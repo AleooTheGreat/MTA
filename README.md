@@ -1,4 +1,4 @@
-#Military Task App
+# Military Task App
 
 **Military Task App** este o aplicație web concepută pentru a gestiona proiecte și sarcini într-un mod eficient, oferind funcționalități personalizate pentru diferite tipuri de utilizatori: utilizatori neînregistrați, membri, organizatori și administratori.
 
