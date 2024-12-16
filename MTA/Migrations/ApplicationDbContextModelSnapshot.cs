@@ -184,6 +184,9 @@ namespace MTA.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -197,6 +200,9 @@ namespace MTA.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("VideoPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

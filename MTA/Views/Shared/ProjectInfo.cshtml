@@ -1,22 +1,38 @@
 ﻿@model MTA.Models.Project
 
 <div class="card-body">
-
+    <!-- Title -->
     <h3 class="card-title alert-success py-3 px-3 rounded-2">@Model.Title</h3>
 
+    <!-- Display the image if it exists -->
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <div class="mb-3">
+            <img src="@Model.ImagePath" alt="Project Image" style="max-width: 300px;" />
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.VideoPath))
+    {
+        <video controls width="400">
+            <source src="@Model.VideoPath" type="video/mp4">
+            Your browser does not support the HTML5 Video element.
+        </video>
+    }
+
+
+    <!-- Project content -->
     <div class="card-text">@Html.Raw(Model.Content)</div>
 
     <div class="d-flex justify-content-between flex-row mt-5">
-
-        <div><i class="bi bi-globe"></i> @Model.Department.DepartmentName</div>
-
-        <div><i class="bi bi-person"></i> @Model.User.UserName</div>
-
+        <div>
+            <i class="bi bi-globe"></i> @Model.Department?.DepartmentName
+        </div>
+        <div>
+            <i class="bi bi-person"></i> @Model.User?.UserName
+        </div>
         <span class="alert-success">Created on: @Model.Date</span>
         <span class="alert-success">Start date: @Model.StartDate</span>
         <span class="alert-success" style="color: red;">End date: @Model.EndDate</span>
-
     </div>
-
 </div>
-

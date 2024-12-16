@@ -256,25 +256,63 @@ namespace MTA.Controllers
             return View(project);
         }
 
-        
+
         [HttpPost]
         [Authorize(Roles = "Commander,Marshall")]
-        public IActionResult New(Project project)
+        public IActionResult New(Project project, IFormFile? file, IFormFile? video)
         {
             var sanitizer = new HtmlSanitizer();
 
             project.Date = DateTime.Now;
             project.StartDate = project.StartDate == DateTime.MinValue ? DateTime.Today : project.StartDate;
             project.EndDate = project.EndDate == DateTime.MinValue ? DateTime.Today : project.EndDate;
-
             project.UserId = _userManager.GetUserId(User);
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 project.Content = sanitizer.Sanitize(project.Content);
 
+                // First save the project so we can get the database-generated ID.
                 db.Projects.Add(project);
                 db.SaveChanges();
+
+                if (file != null && file.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    project.ImagePath = "/Images/" + uniqueFileName;
+                    db.SaveChanges();
+                }
+
+
+                if (video != null && video.Length > 0)
+                {
+                    var videosFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Videos");
+                    if (!Directory.Exists(videosFolder))
+                        Directory.CreateDirectory(videosFolder);
+
+                    var uniqueVideoName = Guid.NewGuid().ToString() + Path.GetExtension(video.FileName);
+                    var videoPath = Path.Combine(videosFolder, uniqueVideoName);
+
+                    using (var stream = new FileStream(videoPath, FileMode.Create))
+                    {
+                        video.CopyTo(stream);
+                    }
+
+                    project.VideoPath = "/Videos/" + uniqueVideoName;
+                    db.SaveChanges();
+                }
+
                 TempData["message"] = "The project was added!";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
@@ -285,6 +323,7 @@ namespace MTA.Controllers
                 return View(project);
             }
         }
+
 
         [Authorize(Roles = "Commander,Marshall")]
         public IActionResult Edit(int id)
@@ -317,37 +356,82 @@ namespace MTA.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Commander,Marshall")]
-        public IActionResult Edit(int id, Project requestProject)
+        public IActionResult Edit(int id, Project requestProject, IFormFile? file, IFormFile? video)
         {
             var sanitizer = new HtmlSanitizer();
 
             Project project = db.Projects.Find(id);
-
-            if(ModelState.IsValid)
+            if (project == null)
             {
-                if((project.UserId == _userManager.GetUserId(User)) 
-                    || User.IsInRole("Marshall"))
+                TempData["message"] = "Project not found.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            if (ModelState.IsValid)
+            {
+                if ((project.UserId == _userManager.GetUserId(User)) || User.IsInRole("Marshall"))
                 {
                     project.Title = requestProject.Title;
-
-                    requestProject.Content = sanitizer.Sanitize(requestProject.Content);
-
-                    project.Content = requestProject.Content;
-
-                    project.StartDate = requestProject.StartDate == DateTime.MinValue ? DateTime.Today : requestProject.StartDate; 
+                    project.Content = sanitizer.Sanitize(requestProject.Content);
+                    project.StartDate = requestProject.StartDate == DateTime.MinValue ? DateTime.Today : requestProject.StartDate;
                     project.EndDate = requestProject.EndDate;
-
                     project.DepartmentId = requestProject.DepartmentId;
                     project.Date = DateTime.Now;
+                    project.Status = requestProject.Status;
+
+                    if (file != null && file.Length > 0)
+                    {
+                        try
+                        {
+                            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
+                            if (!Directory.Exists(uploadsFolder))
+                                Directory.CreateDirectory(uploadsFolder);
+
+                            string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                            using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                file.CopyTo(stream);
+                            }
+
+
+                            project.ImagePath = "/Images/" + uniqueFileName;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error uploading image: " + ex.Message);
+                        }
+                    }
+
+                    if (video != null && video.Length > 0)
+                    {
+                        var videosFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Videos");
+                        if (!Directory.Exists(videosFolder))
+                            Directory.CreateDirectory(videosFolder);
+
+                        var uniqueVideoName = Guid.NewGuid().ToString() + Path.GetExtension(video.FileName);
+                        var videoPath = Path.Combine(videosFolder, uniqueVideoName);
+
+                        using (var stream = new FileStream(videoPath, FileMode.Create))
+                        {
+                            video.CopyTo(stream);
+                        }
+
+                        project.VideoPath = "/Videos/" + uniqueVideoName;
+                    }
+
+
+                    db.SaveChanges();
 
                     TempData["message"] = "The project was modified!";
                     TempData["messageType"] = "alert-success";
-                    db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 else
-                {                    
-                    TempData["message"] = "You can not modify this project as it is not your!";
+                {
+                    TempData["message"] = "You cannot modify this project as it is not yours!";
                     TempData["messageType"] = "alert-danger";
                     return RedirectToAction("Index");
                 }
@@ -418,42 +502,6 @@ namespace MTA.Controllers
             }
            
             return selectList;
-        }
-
-        [HttpPost]
-        public IActionResult UploadImage(IFormFile file)
-        {
-            if (file != null && file.Length > 0)
-            {
-                try
-                {
-                    // Define the upload path (wwwroot/Images)
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
-                    if (!Directory.Exists(uploadsFolder))
-                        Directory.CreateDirectory(uploadsFolder);
-
-                    // Generate a unique file name
-                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    // Save the file to the server
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-
-                    // Generate the URL to return
-                    var imageUrl = Url.Content("~/Images/" + uniqueFileName);
-                    return Json(imageUrl);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error saving file: " + ex.Message);
-                    return BadRequest("Image upload failed.");
-                }
-            }
-
-            return BadRequest("Invalid file.");
         }
 
         [HttpPost]

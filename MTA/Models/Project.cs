@@ -46,6 +46,9 @@ namespace MTA.Models
 
         [Required(ErrorMessage = "Status is mandatory!")]
         public TaskStatus Status { get; set; }
+
+        public string? ImagePath { get; set; }
+        public string? VideoPath { get; set; }
     }
 
     public enum TaskStatus

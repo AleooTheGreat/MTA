@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-6 offset-3">
 
-            <form method="post" asp-action="Edit" asp-controller="Projects" asp-route-id="@Model.Id">
+            <form method="post" asp-action="Edit" asp-controller="Projects" asp-route-id="@Model.Id" enctype="multipart/form-data">
 
                 <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -60,6 +60,16 @@
                     </select>
                     <span asp-validation-for="Status" class="text-danger"></span>
                     <br />
+                </div>
+
+                <div class="form-group">
+                    <label for="file" style="color: black;">Upload / Replace Image</label>
+                    <input type="file" name="file" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="video">Update/Replace Video (Optional)</label>
+                    <input type="file" name="video" class="form-control" />
                 </div>
 
                 <button class="btn btn-sm btn-success" type="submit">Modify project</button>
