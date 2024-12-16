@@ -259,7 +259,7 @@ namespace MTA.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Commander,Marshall")]
-        public IActionResult New(Project project, IFormFile? file, IFormFile? video)
+        public IActionResult New(Project project, IFormFile file, IFormFile? video)
         {
             var sanitizer = new HtmlSanitizer();
 
@@ -356,7 +356,7 @@ namespace MTA.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Commander,Marshall")]
-        public IActionResult Edit(int id, Project requestProject, IFormFile? file, IFormFile? video)
+        public IActionResult Edit(int id, Project requestProject, IFormFile file, IFormFile? video)
         {
             var sanitizer = new HtmlSanitizer();
 

@@ -22,7 +22,7 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 app.UseStaticFiles();
 
-app.Urls.Add("http://0.0.0.0:80");
+//app.Urls.Add("http://0.0.0.0:80");
 
 using (var scope = app.Services.CreateScope())
 {
