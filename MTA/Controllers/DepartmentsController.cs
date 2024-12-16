@@ -10,7 +10,6 @@ namespace MTA.Controllers
     [Authorize(Roles = "Marshall")]
     public class DepartmentsController : Controller
     {
-        //Users and rols
 
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -51,11 +50,11 @@ namespace MTA.Controllers
         }
 
         [HttpPost]
-        public ActionResult New(Department cat)
+        public ActionResult New(Department dept)
         {
             if (ModelState.IsValid)
             {
-                db.Departments.Add(cat);
+                db.Departments.Add(dept);
                 db.SaveChanges();
                 TempData["message"] = "The department was added.";
                 return RedirectToAction("Index");
@@ -63,7 +62,7 @@ namespace MTA.Controllers
 
             else
             {
-                return View(cat);
+                return View(dept);
             }
         }
 
@@ -97,7 +96,7 @@ namespace MTA.Controllers
         {
             Department department = db.Departments.Include("Projects")
                                              .Include("Projects.Alerts")
-                                             .Where(c => c.Id == id)
+                                             .Where(d => d.Id == id)
                                              .First();
 
             db.Departments.Remove(department);

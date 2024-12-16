@@ -29,7 +29,7 @@ namespace MTA.Controllers
             _roleManager = roleManager;
         }
 
-        [Authorize(Roles = "User,Commander,Marshall")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -40,7 +40,7 @@ namespace MTA.Controllers
 
             SetAccessRights();
 
-            if (User.IsInRole("User") || User.IsInRole("Commander"))
+            if (User.IsInRole("Commander"))
             {
                 var missions = from mission in db.Missions.Include("User")
                                .Where(b => b.UserId == _userManager.GetUserId(User))
@@ -76,14 +76,14 @@ namespace MTA.Controllers
         {
             SetAccessRights();
 
-            if (User.IsInRole("User") || User.IsInRole("Commander"))
+            if (User.IsInRole("Commander"))
             {
                 var missions = db.Missions
                                   .Include("ProjectMissions.Project.Department")
                                   .Include("ProjectMissions.Project.User")
                                   .Include("User")
-                                  .Where(b => b.Id == id)
-                                  .Where(b => b.UserId == _userManager.GetUserId(User))
+                                  .Where(m => m.Id == id)
+                                  .Where(m => m.UserId == _userManager.GetUserId(User))
                                   .FirstOrDefault();
                 
                 if(missions == null)
@@ -103,7 +103,7 @@ namespace MTA.Controllers
                                   .Include("ProjectMissions.Project.Department")
                                   .Include("ProjectMissions.Project.User")
                                   .Include("User")
-                                  .Where(b => b.Id == id)
+                                  .Where(m => m.Id == id)
                                   .FirstOrDefault();
 
 
@@ -126,14 +126,14 @@ namespace MTA.Controllers
             }  
         }
 
-        [Authorize(Roles = "User,Commander,Marshall")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult New()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Commander,Marshall")]
+        [Authorize(Roles = "Commander,Marshall")]
         public ActionResult New(Mission m)
         {
             m.UserId = _userManager.GetUserId(User);

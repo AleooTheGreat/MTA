@@ -8,8 +8,6 @@ namespace MTA.Controllers
 {
     public class AlertsController : Controller
     {
-        // Users and roles
-
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;

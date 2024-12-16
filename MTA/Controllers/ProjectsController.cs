@@ -15,7 +15,6 @@ namespace MTA.Controllers
     [Authorize]
     public class ProjectsController : Controller
     {
-        //Configure roles and users 
 
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -37,7 +36,7 @@ namespace MTA.Controllers
         {
             var projects = db.Projects.Include("Department")
                                       .Include("User")
-                                      .OrderByDescending(a => a.Date);
+                                      .OrderByDescending(p => p.Date);
 
 
             if (TempData.ContainsKey("message"))
@@ -208,7 +207,7 @@ namespace MTA.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "User,Commander,Marshall")]
+        [Authorize(Roles = "Commander,Marshall")]
         public IActionResult AddMission([FromForm] ProjectMission projectMission)
         {
             

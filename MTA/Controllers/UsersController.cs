@@ -30,16 +30,26 @@ namespace MTA.Controllers
 
             _roleManager = roleManager;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var users = from user in db.Users
-                        orderby user.UserName
-                        select user;
+            var users = await db.Users
+                                .OrderBy(user => user.UserName)
+                                .ToListAsync();
+
+            var userRoles = new Dictionary<string, IList<string>>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles;
+            }
 
             ViewBag.UsersList = users;
+            ViewBag.UserRoles = userRoles;
 
             return View();
         }
+
 
         public async Task<ActionResult> Show(string id)
         {
@@ -65,7 +75,7 @@ namespace MTA.Controllers
             ViewBag.UserRole = _roleManager.Roles
                                               .Where(r => roleNames.Contains(r.Name))
                                               .Select(r => r.Id)
-                                              .First(); // Selectam 1 singur rol
+                                              .First(); 
 
             return View(user);
         }
@@ -167,6 +177,34 @@ namespace MTA.Controllers
                 });
             }
             return selectList;
+        }
+        [HttpGet]
+        public IActionResult ChangeUserRole(string id)
+        {
+            ApplicationUser user = db.Users.Find(id);
+
+            ViewBag.AllRoles = GetAllRoles();
+
+            return View(user);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserRole(string id, [FromForm] string newRole)
+        {
+            ApplicationUser user = db.Users.Find(id);
+
+            var roles = db.Roles.ToList();
+
+            foreach (var role in roles)
+            {
+                await _userManager.RemoveFromRoleAsync(user, role.Name);
+            }
+
+            var roleName = await _roleManager.FindByIdAsync(newRole);
+            await _userManager.AddToRoleAsync(user, roleName.ToString());
+
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
         }
     }
 }
