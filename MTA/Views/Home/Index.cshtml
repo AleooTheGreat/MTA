@@ -1,17 +1,82 @@
-﻿<div class="row">
-    <div class="col-12">
-        <div class="bg-light rounded-3 p-5 mb-4">
-            <div class="row">
-                <div class="col-md-8">
-                    <h1 class="font-roboto display-5 fw-bold">@Html.Raw(ViewBag.FirstProject.Title)</h1>
-                    <div class="font-montserrat mb-3 truncate">@Html.Raw(ViewBag.FirstProject.Content)</div>
-                    <a href="/Projects/Show/@ViewBag.FirstProject.Id" class="btn btn-outline-success">Show project</a>
-                </div>
-                <div class="col-md-4">
-                    <img src="Images/tank_with_flag.jpg" class="img-fluid align-items-center justify-content-center" />
+﻿@{
+    ViewData["Title"] = "Welcome";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="display-4 font-weight-bold text-success">Welcome to MTA Projects</h1>
+            <p class="lead text-white">Join us and contribute to important military projects that make a difference.</p>
+            <hr class="my-4">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 text-center">
+            <img src="Images/Your_Country_Needs_You.jpg" class="img-fluid rounded" alt="Tank with Flag">
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h2 class="font-weight-bold text-success">Get Started</h2>
+            <p class="text-white">Create an account or log in to access all features and start contributing to projects.</p>
+            <div class="d-flex justify-content-center">
+                <a href="/Identity/Account/Login" class="btn btn-primary btn-lg mx-2">Login</a>
+                <a href="/Identity/Account/Register" class="btn btn-success btn-lg mx-2">Register</a>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="bg-light rounded-3 p-5 mb-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1 class="font-roboto display-5 fw-bold">@Html.Raw(ViewBag.FirstProject.Title)</h1>
+                        <div class="font-montserrat mb-3 truncate">@Html.Raw(ViewBag.FirstProject.Content)</div>
+                        <a href="/Projects/Show/@ViewBag.FirstProject.Id" class="btn btn-outline-success">Show project</a>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="Images/tank_with_flag.jpg" class="img-fluid align-items-center justify-content-center" />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .font-roboto {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .font-montserrat {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+    .text-white {
+        color: white !important;
+    }
+</style>
