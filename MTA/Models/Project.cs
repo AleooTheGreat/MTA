@@ -6,7 +6,7 @@ using static MTA.Models.ProjectMissions;
 
 namespace MTA.Models
 {
-    public class Project 
+    public class Project
     {
         [Key]
         public int Id { get; set; }
@@ -17,7 +17,6 @@ namespace MTA.Models
         public string Title { get; set; }
 
         [Required(ErrorMessage = "The project content is mandatory!")]
-        
         public string Content { get; set; }
 
         public DateTime Date { get; set; }
@@ -36,7 +35,6 @@ namespace MTA.Models
 
         public virtual Department? Department { get; set; }
 
- 
         public virtual ApplicationUser? User { get; set; }
 
         public virtual ICollection<Alert>? Alerts { get; set; }
@@ -46,7 +44,14 @@ namespace MTA.Models
         [NotMapped]
         public IEnumerable<SelectListItem>? Dept { get; set; }
 
+        [Required(ErrorMessage = "Status is mandatory!")]
+        public TaskStatus Status { get; set; }
     }
 
-
+    public enum TaskStatus
+    {
+        NotStarted,
+        InProgress,
+        Completed
+    }
 }

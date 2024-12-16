@@ -16,9 +16,7 @@
                     <label asp-for="Title" class="form-label" style="color: black;">Project title</label>
                     <br />
                     <input asp-for="Title" class="form-control" />
-
                     <span asp-validation-for="Title" class="text-danger"></span>
-
                     <br /><br />
                 </div>
 
@@ -26,9 +24,7 @@
                     <label asp-for="Content" class="form-label" style="color: black;">Project content</label>
                     <br />
                     <textarea asp-for="Content" class="form-control summernote white-background"></textarea>
-
                     <span asp-validation-for="Content" class="text-danger"></span>
-
                     <br /><br />
                 </div>
 
@@ -50,9 +46,19 @@
                     <select asp-for="DepartmentId" asp-items="Model.Dept" class="form-control">
                         <option value="">Select department</option>
                     </select>
-
                     <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    <br />
+                </div>
 
+                <div class="form-group">
+                    <label asp-for="Status" style="color: black;">Status</label>
+                    <br />
+                    <select asp-for="Status" class="form-control">
+                        <option value="NotStarted">Not Started</option>
+                        <option value="InProgress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
                     <br />
                 </div>
 
@@ -62,4 +68,3 @@
         </div>
     </div>
 </div>
-

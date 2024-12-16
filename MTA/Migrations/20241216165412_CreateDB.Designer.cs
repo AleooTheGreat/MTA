@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241216092319_CreateDB")]
+    [Migration("20241216165412_CreateDB")]
     partial class CreateDB
     {
         /// <inheritdoc />
@@ -189,6 +189,9 @@ namespace MTA.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()

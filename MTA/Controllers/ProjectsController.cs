@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using static MTA.Models.ProjectMissions;
 using Ganss.Xss;
+using TaskStatus = MTA.Models.TaskStatus;
 
 
 namespace MTA.Controllers
@@ -455,7 +456,21 @@ namespace MTA.Controllers
             return BadRequest("Invalid file.");
         }
 
+        [HttpPost]
+        [Authorize(Roles = "User,Commander,Marshall")]
+        public async Task<IActionResult> ChangeStatus(int id, TaskStatus status)
+        {
+            var project = await db.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
 
+            project.Status = status;
+            await db.SaveChangesAsync();
+            Console.WriteLine("Url: " + Url.Action("Show", new { id = id }));
+            return RedirectToAction("Show", new { id = project.Id });
+        }
 
 
         public IActionResult IndexNou()
