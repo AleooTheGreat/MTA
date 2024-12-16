@@ -4,12 +4,12 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 style="color: yellowgreen;">@ViewData["Title"]</h1>
 
 <div class="row army-theme">
     <div class="col-md-4">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="army-form">
-            <h2>Create a new account.</h2>
+            <h2 style="color: yellowgreen;">Create a new account.</h2>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
@@ -33,25 +33,23 @@
     <div class="col-md-6 col-md-offset-2">
         <section class="army-section">
             <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <h4>Want to join the army? Complete the form to have a chance to fight for your country!</h4>
-                    <img src="/Images/tank_with_flag.jpg" alt="Tank" class="army-image" />
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
+            @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+            {
+                <h4 style="color: yellowgreen;">Want to join the army? Complete the form to have a chance to fight for your country!</h4>
+                <img src="/Images/tank_with_flag.jpg" alt="Tank" class="army-image" />
+            }
+            else
+            {
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <div>
+                        <p>
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                            }
+                        </p>
+                    </div>
+                </form>
             }
         </section>
     </div>

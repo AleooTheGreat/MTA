@@ -39,7 +39,7 @@
             }
 
         .container {
-            background-color: rgba(44, 62, 80, 0.9);
+            background-color: #a0522d; /* Brighter greenish-brown color */
             padding: 20px;
             border: 3px solid #34495e;
             border-radius: 10px;
@@ -54,6 +54,7 @@
             color: #000000;
             border-top: 3px solid #f1c40f;
         }
+
         .rotating-image {
             position: fixed;
             width: 100px;
@@ -136,7 +137,7 @@
     <script>
 
         const rotatingImage = document.getElementById('rotatingImage');
-        const imageSize = 100; 
+        const imageSize = 100;
         let angle = 0;
         function updatePosition() {
             const windowWidth = window.innerWidth;
@@ -150,7 +151,7 @@
             rotatingImage.style.transform = `rotate(${angle}deg)`;
             angle = (angle + 1) % 360;
         }
-        setInterval(updatePosition, 16); 
+        setInterval(updatePosition, 16);
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
