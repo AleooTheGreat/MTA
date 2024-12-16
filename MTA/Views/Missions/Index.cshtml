@@ -12,7 +12,7 @@
 <br />
 
 <a asp-controller="Missions" asp-action="New" class="btn btn-success rounded-pill mb-5">
-    <i class="bi bi-plus"></i> Add mission
+    <i class="bi bi-plus"></i> Add Mission
 </a>
 
 <div class="row">
@@ -21,20 +21,20 @@
     {
         <div class="col-4 mb-4">
 
-            <div class="card">
+            <div class="card" style="background-color: #4b5320; color: #ecf0f1;">
 
                 <div class="card-body">
-                    
+
                     <h5 class="card-title" name="Name">@mission.Name</h5>
 
-                        @if (ViewBag.EsteAdmin)
-                        {
-                            <div><i class="bi bi-person"> Created by: </i> @mission.User.UserName</div>
-                        }        
+                    @if (ViewBag.EsteAdmin)
+                    {
+                        <div><i class="bi bi-person"> Created by: </i> @mission.User.UserName</div>
+                    }
 
                     <br />
 
-                    <a asp-controller="Missions" asp-action="Show" asp-route-id="@mission.Id" class="btn alert-success">Show mission</a>
+                    <a asp-controller="Missions" asp-action="Show" asp-route-id="@mission.Id" class="btn btn-outline-light">Show Mission</a>
 
                 </div>
             </div>
@@ -42,3 +42,35 @@
     }
 
 </div>
+
+<style>
+    h5 {
+        font-family: 'Courier New', monospace;
+        font-size: 1.5rem;
+    }
+
+    .btn-outline-light {
+        border-color: #ecf0f1;
+        color: #ecf0f1;
+    }
+
+        .btn-outline-light:hover {
+            background-color: #ecf0f1;
+            color: #4b5320;
+        }
+
+    .btn-success {
+        background-color: #27ae60;
+        border-color: #27ae60;
+    }
+
+        .btn-success:hover {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+    .card {
+        border: 2px solid #3e4444;
+    }
+</style>
+

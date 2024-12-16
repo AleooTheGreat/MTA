@@ -1,43 +1,52 @@
 ﻿@model MTA.Models.Mission
 
-
 <div class="row">
 
     <div class="col-12">
 
-        <h5 class="card-title mt-5 mb-3" asp-for="Name">@Model.Name</h5>
-       
+        <h5 class="card-title mt-5 mb-3 text-uppercase font-weight-bold" asp-for="Name">@Model.Name</h5>
 
         @if (ViewBag.EsteAdmin)
         {
-            <i class="bi bi-person"> Created by </i> @Model.User.UserName
-           
+            <div><i class="bi bi-person"> Created by </i> @Model.User.UserName</div>
         }
 
         <br /><br />
-        Projects in the mission
+        <h6 class="text-uppercase">Projects in the mission</h6>
         <br /><br />
 
-        
     </div>
     <br />
 
     @if (Model.ProjectMissions.Count > 0)
-
-        @foreach (var projectMission in Model.ProjectMissions)
     {
-        <div class="col-12">
-            <div class="card" style="width: 100%;">
-            @*<img src="..." class="card-img-top" alt="..."> *@
-
-                <div class="card-body">
-
+        @foreach (var projectMission in Model.ProjectMissions)
+        {
+            <div class="col-12">
+                <div class="card mb-4" style="background-color: #4b5320; color: #ecf0f1; width: 100%;">
+                    <div class="card-body">
                         <partial name="ProjectInfo" model="projectMission.Project" />
-
+                    </div>
                 </div>
             </div>
-            <br /> <br />
-        </div>
+        }
     }
-    
+
 </div>
+
+<style>
+    h5 {
+        font-family: 'Courier New', monospace;
+        font-size: 1.5rem;
+    }
+
+    h6 {
+        font-family: 'Arial Black', sans-serif;
+        letter-spacing: 1px;
+    }
+
+    .card {
+        border: 2px solid #3e4444;
+    }
+</style>
+
