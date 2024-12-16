@@ -41,7 +41,9 @@
   - Membrii pot adăuga, edita și șterge propriile comentarii la task-urile proiectelor din care fac parte.
 - **Administrare**:
   - Administratorii gestionează utilizatorii, proiectele și task-urile, asigurând buna funcționare a aplicației.
-  - Administratorii pot activa sau revoca drepturile utilizatorilor.
+  - Administratorii pot activa sau revoca drepturile utilizatorilor
+    
+### Cerinte
 
 - Sa existe 4 tipuri de utilizatori: utilizator neinregistrat, organizator (nu
 trebuie neaparat sa fie rol – poate fi implementat si din logica de backend),
