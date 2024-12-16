@@ -41,14 +41,34 @@ namespace MTA.Controllers
                 return RedirectToAction("Index", "Projects");
             }
 
-            var projects = from project in db.Projects
-                           select project;
+            var projects = db.Projects.ToList();
 
-            ViewBag.FirstProject = projects.First();
-            ViewBag.Projects = projects.OrderBy(o => o.Date).Skip(1).Take(2);
+            if (!projects.Any())
+            {
+                var placeholderProject = new Project
+                {
+                    Id = 0, // This ID should not conflict with real projects
+                    Title = "No Projects Available",
+                    Content = "There are currently no projects available.",
+                    Date = DateTime.Now,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddMonths(1),
+                    DepartmentId = null,
+                    UserId = null
+                };
+
+                ViewBag.FirstProject = placeholderProject;
+                ViewBag.Projects = new List<Project> { placeholderProject };
+            }
+            else
+            {
+                ViewBag.FirstProject = projects.First();
+                ViewBag.Projects = projects.OrderBy(o => o.Date).Skip(1).Take(2);
+            }
 
             return View();
         }
+
 
         public IActionResult Privacy()
         {
