@@ -36,6 +36,13 @@
 
                     <a asp-controller="Missions" asp-action="Show" asp-route-id="@mission.Id" class="btn btn-outline-light">Show Mission</a>
 
+                    @if (ViewBag.AfisareButoane)
+                    {
+                        <a asp-controller="Missions" asp-action="Edit" asp-route-id="@mission.Id" class="btn btn-warning mt-2">Edit</a>
+                        <form asp-controller="Missions" asp-action="DeleteConfirmed" asp-route-id="@mission.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger mt-2">Delete</button>
+                        </form>
+                    }
                 </div>
             </div>
         </div>
@@ -54,23 +61,42 @@
         color: #ecf0f1;
     }
 
-        .btn-outline-light:hover {
-            background-color: #ecf0f1;
-            color: #4b5320;
-        }
+    .btn-outline-light:hover {
+        background-color: #ecf0f1;
+        color: #4b5320;
+    }
 
     .btn-success {
         background-color: #27ae60;
         border-color: #27ae60;
     }
 
-        .btn-success:hover {
-            background-color: #2ecc71;
-            border-color: #2ecc71;
-        }
+    .btn-success:hover {
+        background-color: #2ecc71;
+        border-color: #2ecc71;
+    }
+
+    .btn-warning {
+        background-color: #f39c12;
+        border-color: #f39c12;
+    }
+
+    .btn-warning:hover {
+        background-color: #e67e22;
+        border-color: #e67e22;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        border-color: #e74c3c;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+        border-color: #c0392b;
+    }
 
     .card {
         border: 2px solid #3e4444;
     }
 </style>
-

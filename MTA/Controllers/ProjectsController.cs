@@ -219,7 +219,7 @@ namespace MTA.Controllers
                     .Where(pm => pm.MissionId == projectMission.MissionId)
                     .Count() > 0)
                 {
-                    TempData["message"] = "This project was already added in the mission!";
+                    TempData["message"] = "This project was added in the mission!";
                     TempData["messageType"] = "alert-danger";
                 }
                 else
@@ -229,7 +229,7 @@ namespace MTA.Controllers
                    
                     db.SaveChanges();
 
-                    TempData["message"] = "The project was already added to the selected mission!";
+                    TempData["message"] = "The project was added to the selected mission!";
                     TempData["messageType"] = "alert-success";
                 }
 
