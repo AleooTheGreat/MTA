@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241217101500_CreateDB")]
-    partial class CreateDB
+    [Migration("20241217114229_Db")]
+    partial class Db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
