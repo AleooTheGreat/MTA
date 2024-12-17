@@ -23,6 +23,28 @@
     </div>
 </div>
 
+<div class="container">
+    <h4 class="text-uppercase text-center font-weight-bold mt-4" style="color: #2c3e50;">Projects Assigned to This Mission</h4>
+    <hr />
+
+    @if (Model.ProjectMissions != null && Model.ProjectMissions.Any())
+    {
+        <ul class="list-group">
+            @foreach (var projectMission in Model.ProjectMissions)
+            {
+                <li class="list-group-item" style="background-color: #ecf0f1; color: #2c3e50;">
+                    <strong>@projectMission.Project.Title</strong>
+                    <a href="/Projects/Show/@projectMission.Project.Id" class="btn btn-sm btn-primary float-right">Show project</a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-center text-muted">No projects have been assigned to this mission yet.</p>
+    }
+</div>
+
 <br />
 <hr />
 <br />
