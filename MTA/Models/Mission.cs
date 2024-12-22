@@ -1,5 +1,6 @@
 ﻿using static MTA.Models.ProjectMissions;
 using System.ComponentModel.DataAnnotations;
+using static MTA.Models.UserMissions;
 
 namespace MTA.Models
 {
@@ -13,7 +14,9 @@ namespace MTA.Models
 
         public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
-
+    
         public virtual ICollection<ProjectMission>? ProjectMissions { get; set; }
+        public virtual ICollection<UserMission>? UserMissions { get; set; }
+
     }
 }

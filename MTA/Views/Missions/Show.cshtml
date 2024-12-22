@@ -23,6 +23,52 @@
     </div>
 </div>
 
+<!-- Add Member Section -->
+@if (User.IsInRole("Commander") || User.IsInRole("Marshall"))
+{
+    <div class="container mt-4">
+        <h4 class="text-uppercase text-center font-weight-bold" style="color: #2c3e50;">Add Member to Mission</h4>
+        <form asp-controller="Missions" asp-action="AddMember" method="post" class="form-inline justify-content-center">
+            <input type="hidden" name="missionId" value="@Model.Id" />
+            <div class="form-group mb-2">
+                <select class="form-control" name="userId">
+                    @foreach (var user in ViewBag.PossibleMembers as List<MTA.Models.ApplicationUser>)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Add Member</button>
+        </form>
+    </div>
+}
+
+<!-- Current Members Section -->
+<div class="container mt-4">
+    <h4 class="text-uppercase text-center font-weight-bold" style="color: #2c3e50;">Current Members</h4>
+    <ul class="list-group">
+        @if (Model.UserMissions != null && Model.UserMissions.Any())
+        {
+            foreach (var userMission in Model.UserMissions)
+            {
+                <li class="list-group-item" style="background-color: #ecf0f1; color: #2c3e50;">
+                    @userMission.User.UserName
+                    @if (User.IsInRole("Marshall"))
+                    {
+                        <form method="post" asp-controller="Missions" asp-action="RemoveMember" asp-route-missionId="@Model.Id" asp-route-userId="@userMission.UserId" class="float-right">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    }
+                </li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item">No members have been added to this mission yet.</li>
+        }
+    </ul>
+</div>
+
 <div class="container">
     <h4 class="text-uppercase text-center font-weight-bold mt-4" style="color: #2c3e50;">Projects Assigned to This Mission</h4>
     <hr />
@@ -54,24 +100,29 @@
         font-family: 'Arial Black', sans-serif;
         letter-spacing: 2px;
     }
+
     h3 {
         font-family: 'Courier New', monospace;
         font-size: 1.5rem;
     }
+
     .btn-outline-light {
         border-color: #ecf0f1;
         color: #ecf0f1;
     }
-    .btn-outline-light:hover {
-        background-color: #ecf0f1;
-        color: #2c3e50;
-    }
+
+        .btn-outline-light:hover {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+
     .btn-success {
         background-color: #27ae60;
         border-color: #27ae60;
     }
-    .btn-success:hover {
-        background-color: #2ecc71;
-        border-color: #2ecc71;
-    }
+
+        .btn-success:hover {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+        }
 </style>

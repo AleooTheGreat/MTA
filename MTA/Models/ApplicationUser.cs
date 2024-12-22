@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations.Schema;
+using static MTA.Models.UserMissions;
+using static MTA.Models.UserProjects;
 
 
 namespace MTA.Models
@@ -18,6 +20,10 @@ namespace MTA.Models
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
+
+        public virtual ICollection<UserMission>? UserMissions { get; set; }
+        public virtual ICollection<UserProject>? UserProjects { get; set; }
+
 
         [NotMapped]
         public IEnumerable<SelectListItem>? AllRoles { get; set; }

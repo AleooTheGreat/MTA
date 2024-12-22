@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MTA.Models.ProjectMissions;
+using static MTA.Models.UserProjects;
 
 namespace MTA.Models
 {
@@ -49,6 +50,9 @@ namespace MTA.Models
 
         public string? ImagePath { get; set; }
         public string? VideoPath { get; set; }
+
+        public virtual ICollection<UserProject>? UserProjects { get; set; }
+
     }
 
     public enum TaskStatus

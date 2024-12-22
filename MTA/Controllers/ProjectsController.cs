@@ -31,22 +31,69 @@ namespace MTA.Controllers
             _roleManager = roleManager;
         }
 
-        
+
         [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Index()
         {
-            var projects = db.Projects.Include("Department")
-                                      .Include("User")
-                                      .OrderByDescending(p => p.Date);
+            // 1) Retrieve the current user's ID.
+            var currentUserId = _userManager.GetUserId(User);
 
+            // 2) Start with the full projects query (unfiltered).
+            //    We'll apply role-based filtering below.
+            var projects = db.Projects
+                             .Include(p => p.Department)
+                             .Include(p => p.User)  // the user who created the project, presumably
+                             .OrderByDescending(p => p.Date);
 
+            // If you have any TempData messages, pass them to ViewBag
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
                 ViewBag.Alert = TempData["messageType"];
             }
 
-            //Basic search engine
+            // 3) If the current user is in the "User" role, filter
+            //    so that only assigned projects are shown.
+            if (User.IsInRole("User"))
+            {
+                // --- A) Projects assigned directly to the user via UserProjects ---
+                var directUserProjectIds = db.UserProjects
+                                             .Where(up => up.UserId == currentUserId)
+                                             .Select(up => up.ProjectId)
+                                             .Where(pid => pid.HasValue) // guard if ProjectId is nullable
+                                             .Select(pid => pid.Value)
+                                             .Distinct()
+                                             .ToList();
+
+                // --- B) Projects assigned indirectly via Missions -> ProjectMissions ---
+                // First, get all mission IDs the user is part of.
+                var userMissionIds = db.UserMissions
+                                       .Where(um => um.UserId == currentUserId)
+                                       .Select(um => um.MissionId)
+                                       .Where(mid => mid.HasValue)
+                                       .Select(mid => mid.Value)
+                                       .Distinct()
+                                       .ToList();
+
+                // Then get the ProjectIDs linked to those mission IDs
+                var userProjectIdsFromMissions = db.ProjectMissions
+                                                   .Where(pm => pm.MissionId.HasValue
+                                                             && userMissionIds.Contains(pm.MissionId.Value))
+                                                   .Select(pm => pm.ProjectId)
+                                                   .Where(pid => pid.HasValue)
+                                                   .Select(pid => pid.Value)
+                                                   .Distinct()
+                                                   .ToList();
+
+                // Combine the two sets of Project IDs (direct + indirect)
+                var allUserProjectIds = directUserProjectIds
+                                        .Union(userProjectIdsFromMissions)
+                                        .ToList();
+
+                // Filter out only those projects that match these IDs
+                projects = projects.Where(p => allUserProjectIds.Contains(p.Id))
+                                   .OrderByDescending(p => p.Date);
+            }
 
             var search = "";
 
@@ -54,14 +101,14 @@ namespace MTA.Controllers
             {
                 search = Convert.ToString(HttpContext.Request.Query["search"]).Trim();// If you try to be funny you can't ;)
 
-                
+
                 List<int> projectIds = db.Projects.Where
                                         (
                                          pj => pj.Title.Contains(search)
                                          || pj.Content.Contains(search)
                                         ).Select(p => p.Id).ToList();
 
-             
+
                 List<int> projectIdsOfAlertsWithSearchString = db.Alerts
                                         .Where
                                         (
@@ -80,27 +127,24 @@ namespace MTA.Controllers
 
             ViewBag.SearchString = search;
 
+            // 5) Pagination
             int _perPage = 5;
-
             int totalItems = projects.Count();
 
             var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
-
             var offset = 0;
-
-            if (!currentPage.Equals(0))
+            if (currentPage > 1)
             {
                 offset = (currentPage - 1) * _perPage;
             }
 
             var paginatedProjects = projects.Skip(offset).Take(_perPage);
 
-
             ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
-
             ViewBag.Projects = paginatedProjects;
 
-            if (search != "")
+            // Base URL for pagination links
+            if (!string.IsNullOrEmpty(search))
             {
                 ViewBag.PaginationBaseUrl = "/Projects/Index/?search=" + search + "&page";
             }
@@ -112,7 +156,7 @@ namespace MTA.Controllers
             return View();
         }
 
-       
+
         public Dictionary<int, int> GetProjectAlertCounts()
         {
             var projectCommentCounts = db.Projects

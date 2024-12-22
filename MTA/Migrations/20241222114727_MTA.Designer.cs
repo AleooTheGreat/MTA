@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241217114229_Db")]
-    partial class Db
+    [Migration("20241222114727_MTA")]
+    partial class MTA
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,6 +242,52 @@ namespace MTA.Migrations
                     b.ToTable("ProjectMissions");
                 });
 
+            modelBuilder.Entity("MTA.Models.UserMissions+UserMission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("MissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MissionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserMissions");
+                });
+
+            modelBuilder.Entity("MTA.Models.UserProjects+UserProject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProjects");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -441,6 +487,36 @@ namespace MTA.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("MTA.Models.UserMissions+UserMission", b =>
+                {
+                    b.HasOne("MTA.Models.Mission", "Mission")
+                        .WithMany("UserMissions")
+                        .HasForeignKey("MissionId");
+
+                    b.HasOne("MTA.Models.ApplicationUser", "User")
+                        .WithMany("UserMissions")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Mission");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MTA.Models.UserProjects+UserProject", b =>
+                {
+                    b.HasOne("MTA.Models.Project", "Project")
+                        .WithMany("UserProjects")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("MTA.Models.ApplicationUser", "User")
+                        .WithMany("UserProjects")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -499,6 +575,10 @@ namespace MTA.Migrations
                     b.Navigation("Missions");
 
                     b.Navigation("Projects");
+
+                    b.Navigation("UserMissions");
+
+                    b.Navigation("UserProjects");
                 });
 
             modelBuilder.Entity("MTA.Models.Department", b =>
@@ -509,6 +589,8 @@ namespace MTA.Migrations
             modelBuilder.Entity("MTA.Models.Mission", b =>
                 {
                     b.Navigation("ProjectMissions");
+
+                    b.Navigation("UserMissions");
                 });
 
             modelBuilder.Entity("MTA.Models.Project", b =>
@@ -516,6 +598,8 @@ namespace MTA.Migrations
                     b.Navigation("Alerts");
 
                     b.Navigation("ProjectMissions");
+
+                    b.Navigation("UserProjects");
                 });
 #pragma warning restore 612, 618
         }

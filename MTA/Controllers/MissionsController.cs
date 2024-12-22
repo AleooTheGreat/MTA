@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static MTA.Models.UserMissions;
 
 namespace MTA.Controllers
 {
@@ -64,54 +65,63 @@ namespace MTA.Controllers
         }
 
         [Authorize(Roles = "User,Commander,Marshall")]
-        public IActionResult Show(int id)
+        public async Task<IActionResult> Show(int id)
         {
             SetAccessRights();
 
+            // Base query setup
+            var missionQuery = db.Missions
+                .Include(m => m.ProjectMissions)
+                    .ThenInclude(pm => pm.Project)
+                        .ThenInclude(p => p.Department)
+                .Include(m => m.ProjectMissions)
+                    .ThenInclude(pm => pm.Project)
+                        .ThenInclude(p => p.User)
+                .Include(m => m.UserMissions)
+                    .ThenInclude(um => um.User); // Include users related to this mission
+
+            // Fetch the mission based on the user's role
+            var userId = _userManager.GetUserId(User);
+            Mission mission;
+
             if (User.IsInRole("Commander"))
             {
-                var missions = db.Missions
-                                  .Include("ProjectMissions.Project.Department")
-                                  .Include("ProjectMissions.Project.User")
-                                  .Include("User")
-                                  .Where(m => m.Id == id)
-                                  .Where(m => m.UserId == _userManager.GetUserId(User))
-                                  .FirstOrDefault();
-
-                if (missions == null)
-                {
-                    TempData["message"] = "The searched resource was not found!";
-                    TempData["messageType"] = "alert-danger";
-                    return RedirectToAction("Index", "Projects");
-                }
-
-                return View(missions);
+                // Commanders can only access their own missions
+                mission = await missionQuery.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
             }
             else if (User.IsInRole("Marshall"))
             {
-                var missions = db.Missions
-                                  .Include("ProjectMissions.Project.Department")
-                                  .Include("ProjectMissions.Project.User")
-                                  .Include("User")
-                                  .Where(m => m.Id == id)
-                                  .FirstOrDefault();
-
-                if (missions == null)
-                {
-                    TempData["message"] = "The searched resource cannot be found!";
-                    TempData["messageType"] = "alert-danger";
-                    return RedirectToAction("Index", "Projects");
-                }
-
-                return View(missions);
+                // Marshalls can access any missions
+                mission = await missionQuery.FirstOrDefaultAsync(m => m.Id == id);
             }
             else
             {
-                TempData["message"] = "You have no rights!";
+                // If the user is neither a Commander nor a Marshall
+                TempData["message"] = "You do not have rights!";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index", "Projects");
             }
+
+            if (mission == null)
+            {
+                // If no mission is found
+                TempData["message"] = "The searched resource was not found!";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index", "Projects");
+            }
+
+            // Prepare a list of possible members that can be added to the mission
+            var allUserIds = mission.UserMissions.Select(um => um.UserId).ToList();
+            ViewBag.PossibleMembers = await _userManager.Users.Where(u => !allUserIds.Contains(u.Id)).ToListAsync();
+
+            // Send current members to the view
+            ViewBag.CurrentMembers = mission.UserMissions.Select(um => um.User).ToList();
+
+            return View(mission);
         }
+
+
+
 
         private void SetAccessRights()
         {
@@ -232,6 +242,85 @@ namespace MTA.Controllers
             TempData["messageType"] = "alert-success";
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Commander,Marshall")]
+        public async Task<IActionResult> AddMember(int missionId, string userId)
+        {
+            var mission = await db.Missions
+                                  .Include(m => m.UserMissions)
+                                  .FirstOrDefaultAsync(m => m.Id == missionId);
+
+            if (mission == null)
+            {
+                TempData["message"] = "Mission not found.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            var userToAdd = await _userManager.FindByIdAsync(userId);
+            if (userToAdd == null)
+            {
+                TempData["message"] = "User not found.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            // Check if the user is already part of the mission
+            if (mission.UserMissions.Any(um => um.UserId == userId))
+            {
+                TempData["message"] = "User already added to the mission.";
+                TempData["messageType"] = "alert-info";
+                return RedirectToAction("Index");
+            }
+
+            // Authorization check: Marshall can add anyone, Commanders can add only users
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
+
+            if (currentUserRoles.Contains("Commander") && !await _userManager.IsInRoleAsync(userToAdd, "Commander"))
+            {
+                // Commanders adding users
+                mission.UserMissions.Add(new UserMission { UserId = userId, MissionId = missionId });
+            }
+            else if (currentUserRoles.Contains("Marshall"))
+            {
+                // Marshalls can add users and other commanders
+                mission.UserMissions.Add(new UserMission { UserId = userId, MissionId = missionId });
+            }
+            else
+            {
+                TempData["message"] = "You do not have permission to add this member.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            await db.SaveChangesAsync();
+            TempData["message"] = "Member added to mission successfully.";
+            TempData["messageType"] = "alert-success";
+            return RedirectToAction("Show", new { id = missionId });
+        }
+
+        [Authorize(Roles = "Marshall")]
+        public async Task<IActionResult> RemoveMember(int missionId, string userId)
+        {
+            var userMission = await db.UserMissions.FirstOrDefaultAsync(um => um.MissionId == missionId && um.UserId == userId);
+            if (userMission != null)
+            {
+                db.UserMissions.Remove(userMission);
+                await db.SaveChangesAsync();
+                TempData["message"] = "Member removed successfully!";
+                TempData["messageType"] = "alert-success";
+            }
+            else
+            {
+                TempData["message"] = "Member not found!";
+                TempData["messageType"] = "alert-danger";
+            }
+
+            return RedirectToAction("Show", new { id = missionId });
+        }
+
 
     }
 }
