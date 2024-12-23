@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using static MTA.Models.ProjectMissions;
 using Ganss.Xss;
 using TaskStatus = MTA.Models.TaskStatus;
+using static MTA.Models.UserProjects;
 
 
 namespace MTA.Controllers
@@ -170,24 +171,24 @@ namespace MTA.Controllers
         {
             var initialAlertCounts = GetProjectAlertCounts();
 
-            /*
-             * Debug like a noob :) 
-             * foreach (Project proj in db.Projects)
+            Project project = db.Projects.Include(p => p.Department)
+                                         .Include(p => p.User)
+                                         .Include(p => p.Alerts)
+                                         .ThenInclude(a => a.User)
+                                         .Include(p => p.UserProjects)
+                                         .ThenInclude(up => up.User)
+                                         .FirstOrDefault(pr => pr.Id == id);
+
+            if (project == null)
             {
-                Console.WriteLine($"Project ID: {proj.Id}");
+                return NotFound();
             }
-            Console.WriteLine($"Project ID Cautat: {id}");*/
-           
-            Project project = db.Projects.Include("Department")
-                                         .Include("User")
-                                         .Include("Alerts")
-                                         .Include("Alerts.User")
-                              .Where(pr => pr.Id == id)
-                              .First();
 
             ViewBag.UserMissions = db.Missions
                                       .Where(m => m.UserId == _userManager.GetUserId(User))
                                       .ToList();
+
+            ViewBag.Users = db.Users.ToList();
 
             SetAccessRights();
 
@@ -564,10 +565,92 @@ namespace MTA.Controllers
             return RedirectToAction("Show", new { id = project.Id });
         }
 
-
-        public IActionResult IndexNou()
+        [HttpPost]
+        [Authorize(Roles = "Commander,Marshall")]
+        public IActionResult AddMember(int projectId, string userId)
         {
-            return View();
+            var project = db.Projects.Include(p => p.UserProjects).Include(p => p.ProjectMissions).FirstOrDefault(p => p.Id == projectId);
+            if (project == null)
+            {
+                TempData["message"] = "Project not found.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            if (project.UserId != _userManager.GetUserId(User) && !User.IsInRole("Marshall"))
+            {
+                TempData["message"] = "You do not have permission to add members to this project.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Show", new { id = projectId });
+            }
+
+            // Check if the user is part of the related mission
+            var missionIds = project.ProjectMissions.Select(pm => pm.MissionId).ToList();
+            var isUserInMission = db.UserMissions.Any(um => missionIds.Contains(um.MissionId) && um.UserId == userId);
+
+            if (!isUserInMission)
+            {
+                TempData["message"] = "User is not part of the related mission.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Show", new { id = projectId });
+            }
+
+            if (db.UserProjects.Any(up => up.ProjectId == projectId && up.UserId == userId))
+            {
+                TempData["message"] = "User is already a member of this project.";
+                TempData["messageType"] = "alert-warning";
+                return RedirectToAction("Show", new { id = projectId });
+            }
+
+            var userProject = new UserProject
+            {
+                ProjectId = projectId,
+                UserId = userId
+            };
+
+            db.UserProjects.Add(userProject);
+            db.SaveChanges();
+
+            TempData["message"] = "Member added to the project successfully.";
+            TempData["messageType"] = "alert-success";
+            return RedirectToAction("Show", new { id = projectId });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Commander,Marshall")]
+        public IActionResult RemoveMember(int projectId, string userId)
+        {
+            var project = db.Projects.Include(p => p.UserProjects).FirstOrDefault(p => p.Id == projectId);
+            if (project == null)
+            {
+                TempData["message"] = "Project not found.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            if (project.UserId != _userManager.GetUserId(User) && !User.IsInRole("Marshall"))
+            {
+                TempData["message"] = "You do not have permission to remove members from this project.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Show", new { id = projectId });
+            }
+
+            var userProject = db.UserProjects.FirstOrDefault(up => up.ProjectId == projectId && up.UserId == userId);
+            if (userProject != null)
+            {
+                db.UserProjects.Remove(userProject);
+                db.SaveChanges();
+
+                TempData["message"] = "Member removed from the project successfully.";
+                TempData["messageType"] = "alert-success";
+            }
+            else
+            {
+                TempData["message"] = "User is not a member of this project.";
+                TempData["messageType"] = "alert-warning";
+            }
+
+            return RedirectToAction("Show", new { id = projectId });
         }
     }
 }

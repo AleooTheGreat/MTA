@@ -10,20 +10,21 @@ namespace MTA.Controllers
     [Authorize(Roles = "Marshall")]
     public class DepartmentsController : Controller
     {
-
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+
         public DepartmentsController(
-        ApplicationDbContext context,
-        UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager
         )
         {
             db = context;
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
         public ActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -32,8 +33,8 @@ namespace MTA.Controllers
             }
 
             var departments = from department in db.Departments
-                             orderby department.DepartmentName
-                             select department;
+                              orderby department.DepartmentName
+                              select department;
             ViewBag.Departments = departments;
             return View();
         }
@@ -59,7 +60,6 @@ namespace MTA.Controllers
                 TempData["message"] = "The department was added.";
                 return RedirectToAction("Index");
             }
-
             else
             {
                 return View(dept);
@@ -68,8 +68,8 @@ namespace MTA.Controllers
 
         public ActionResult Edit(int id)
         {
-            Department departemnt = db.Departments.Find(id);
-            return View(departemnt);
+            Department department = db.Departments.Find(id);
+            return View(department);
         }
 
         [HttpPost]
@@ -79,7 +79,6 @@ namespace MTA.Controllers
 
             if (ModelState.IsValid)
             {
-
                 department.DepartmentName = requestDepartment.DepartmentName;
                 db.SaveChanges();
                 TempData["message"] = "The department was modified!";
@@ -94,15 +93,30 @@ namespace MTA.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            Department department = db.Departments.Include("Projects")
-                                             .Include("Projects.Alerts")
-                                             .Where(d => d.Id == id)
-                                             .First();
+            Department department = db.Departments
+                .Include(d => d.Projects)
+                .ThenInclude(p => p.Alerts)
+                .FirstOrDefault(d => d.Id == id);
+
+            if (department == null)
+            {
+                TempData["message"] = "Department not found.";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
+            // Remove related projects and alerts
+            foreach (var project in department.Projects)
+            {
+                db.Alerts.RemoveRange(project.Alerts);
+                db.Projects.Remove(project);
+            }
 
             db.Departments.Remove(department);
+            db.SaveChanges();
 
             TempData["message"] = "The department was deleted.";
-            db.SaveChanges();
+            TempData["messageType"] = "alert-success";
             return RedirectToAction("Index");
         }
     }
