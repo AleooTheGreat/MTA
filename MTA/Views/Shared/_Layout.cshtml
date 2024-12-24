@@ -9,58 +9,195 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MTA.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+
+    <script src="https://cdn.tiny.cloud/1/qctgtklrsv711hgpgzdgmvfbc72z0b65z0k66rwkmgu0lfjw/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: 'textarea#tiny',
+            plugins: [
+            'a11ychecker','advlist','advcode','advtable','autolink','checklist','markdown',
+            'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
+            'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
+            ],
+            toolbar: 'undo redo | a11ycheck casechange blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify |' +
+            'bullist numlist checklist outdent indent | removeformat | code table help'
+      })
+    </script>
     <style>
+        /* General Body Styling */
         body {
-            background-image: url('/Images/camouflage-pattern.jpg');
+            background-image: url('/Images/army-camouflage.png'); /* Camouflage background */
             background-size: cover;
             background-attachment: fixed;
-            color: #000000;
+            color: #d4d4d4; /* Soft gray for text readability */
             font-family: 'Arial', sans-serif;
         }
 
+        /* Navbar Styling */
         .navbar {
-            background-color: #2c3e50;
-            border-bottom: 3px solid #f1c40f;
+            background-color: #0b3d0b; /* Dark evergreen */
+            border-bottom: 3px solid #2b6b2b; /* Slightly lighter evergreen for accents */
         }
 
         .navbar-brand {
             font-family: 'Impact', sans-serif;
-            font-size: 1.5rem;
-            color: #f1c40f !important;
+            font-size: 1.8rem;
+            color: #4CAF50 !important; /* Bright green */
+            text-transform: uppercase;
         }
 
         .navbar-nav .nav-link {
-            color: #f1c40f !important;
+            color: #d4f4dd !important; /* Light green */
             font-weight: bold;
+            text-transform: uppercase;
         }
 
             .navbar-nav .nav-link:hover {
-                color: #ecf0f1 !important;
+                color: #e5ffeb !important; /* Very light green on hover */
             }
 
+        /* Container Styling */
         .container {
-            background-color: #a0522d; 
+            background-color: #102810; /* Very dark green */
             padding: 20px;
-            border: 3px solid #34495e;
+            border: 2px solid #2b6b2b; /* Evergreen border */
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
-            color: #000000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+            color: #d4f4dd; /* Light green text */
         }
 
+        /* Footer Styling */
         footer {
-            background-color: #2c3e50;
+            background-color: #0b3d0b; /* Dark evergreen */
             padding: 10px 0;
             text-align: center;
-            color: #000000;
-            border-top: 3px solid #f1c40f;
+            color: #d4f4dd; /* Light green text */
+            border-top: 3px solid #2b6b2b; /* Accent evergreen */
+            font-weight: bold;
         }
 
+        /* Rotating Image Styling */
         .rotating-image {
             position: fixed;
             width: 100px;
             height: 100px;
             z-index: 1000;
+            border: 2px solid #4CAF50; /* Green border */
+            border-radius: 50%; /* Circular image */
         }
+
+        /* Form Input Styling */
+        input[type="text"], textarea {
+            background-color: #102810; /* Very dark green */
+            color: #d4f4dd; /* Light green text */
+            border: 2px solid #2b6b2b; /* Evergreen border */
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+            input[type="text"]::placeholder, textarea::placeholder {
+                color: #a1c4a3; /* Placeholder light green */
+            }
+
+            input[type="text"]:focus, textarea:focus {
+                border-color: #4CAF50; /* Bright green when focused */
+            }
+
+        /* Button Styling */
+        button {
+            background-color: #2b6b2b; /* Evergreen */
+            color: #d4f4dd; /* Light green text */
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+            button:hover {
+                background-color: #4CAF50; /* Highlighted green */
+                color: #102810; /* Dark green text */
+            }
+
+        .card {
+            background-color: #0a0a0a; /* Black card background */
+            border: 2px solid #2b6b2b; /* Evergreen border */
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            margin: 15px;
+            color: #d4f4dd; /* Light green text */
+        }
+        /* Pagination Styling */
+        .pagination a {
+            background-color: #0b3d0b; /* Dark evergreen */
+            color: #4CAF50; /* Bright green text */
+            padding: 5px 10px;
+            margin: 0 5px;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+
+            .pagination a:hover {
+                background-color: #000000; /* Bright green background */
+                color: #0b3d0b; /* Dark evergreen text */
+            }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #102810; /* Very dark green */
+            color: #d4f4dd; /* Light green text */
+            border: 1px solid #2b6b2b; /* Evergreen border */
+        }
+
+            table th, table td {
+                border: 1px solid #2b6b2b; /* Evergreen cell borders */
+                padding: 10px;
+                text-align: center;
+            }
+
+            table th {
+                background-color: #0b3d0b; /* Dark evergreen header */
+                color: #d4f4dd; /* Light green text */
+                text-transform: uppercase;
+            }
+
+            table tr:nth-child(even) {
+                background-color: #163a16; /* Slightly lighter green for even rows */
+            }
+
+            table tr:hover {
+                background-color: #2b6b2b; /* Highlighted green */
+            }
+
+        /* Custom Heading Styles */
+        h1, h2, h3, h4, h5, h6 {
+            color: #4CAF50; /* Bright green headings */
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #4CAF50; /* Green scrollbar */
+            border-radius: 5px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: #6BFF77; /* Highlighted green on hover */
+            }
+
+
     </style>
 </head>
 <body>
