@@ -69,7 +69,6 @@ namespace MTA.Controllers
         {
             SetAccessRights();
 
-            // Base query setup
             var missionQuery = db.Missions
                 .Include(m => m.ProjectMissions)
                     .ThenInclude(pm => pm.Project)
@@ -78,7 +77,7 @@ namespace MTA.Controllers
                     .ThenInclude(pm => pm.Project)
                         .ThenInclude(p => p.User)
                 .Include(m => m.UserMissions)
-                    .ThenInclude(um => um.User); // Include users related to this mission
+                    .ThenInclude(um => um.User);
 
             // Fetch the mission based on the user's role
             var userId = _userManager.GetUserId(User);

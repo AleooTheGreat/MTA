@@ -43,11 +43,14 @@ namespace MTA.Controllers
 
             var projects = db.Projects.ToList();
 
+            //Daca exista proiecte se poate vedea primul 
+            //Daca nu exista o sa se vada ce este mai jos
+
             if (!projects.Any())
             {
                 var placeholderProject = new Project
                 {
-                    Id = 0, // This ID should not conflict with real projects
+                    Id = 0,
                     Title = "No Projects Available",
                     Content = "There are currently no projects available.",
                     Date = DateTime.Now,

@@ -93,6 +93,8 @@ namespace MTA.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
+            // Select din SQL ;) (Singurul lucru pe care il inteleg la SGBD, fara BEGIN SI END;\)
+
             Department department = db.Departments
                 .Include(d => d.Projects)
                 .ThenInclude(p => p.Alerts)
@@ -105,7 +107,8 @@ namespace MTA.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Remove related projects and alerts
+            // Stergem toate alertele din toate proiectele din departament
+
             foreach (var project in department.Projects)
             {
                 db.Alerts.RemoveRange(project.Alerts);
