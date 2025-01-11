@@ -1,0 +1,127 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<!-- Outer container for the camouflage background -->
+<div style="background: url('/Images/fundal.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 50vh;  /* full viewport height */
+            position: relative; /* allows absolutely positioned elements inside */
+            padding-top: 50px;  /* top spacing for images */
+            padding-bottom: 50px;">
+    <!-- Two AK-47 images at the top pointing inward -->
+    <img src="/Images/ak47-left.png"
+         alt="AK-47 Left"
+         style="position: absolute;
+                top: 30px;
+                left: 50px;
+                height: 100px;
+                transform: rotate(20deg);
+                z-index: 2;" />
+
+    <img src="/Images/ak47-right.png"
+         alt="AK-47 Right"
+         style="position: absolute;
+                top: 30px;
+                right: 50px;
+                height: 100px;
+                transform: rotate(-20deg);
+                z-index: 2;" />
+
+    <!-- Container that holds the green box and the login card -->
+    <div style="max-width: 800px;
+                max-height: 100px;
+                margin: 0 auto;
+                background-color: #053005;
+                border-radius: 10px;
+                padding: 40px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.7);">
+
+        <!-- Heading in green -->
+        <h1 class="text-center" style="color: #64ff64; text-transform: uppercase; margin-bottom: 30px;">
+            Sign In
+        </h1>
+
+        <!-- The login card itself (black background) -->
+        <!-- The login card itself (black background) -->
+        <div class="row justify-content-center">
+            <!-- Make the card wider by increasing the column size -->
+            <div class="col-md-6">
+                <div style="
+            background-color: #000;
+            padding: 40px;               /* more internal space */
+            margin: 20px 0;              /* extra spacing top/bottom */
+            border-radius: 12px;         /* softer corners */
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
+            transition: all 0.2s ease;
+        ">
+                    <!-- Validation errors -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form method="post">
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Input.Email" class="form-label" style="color: #fff;">
+                                Email
+                            </label>
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label asp-for="Input.Password" class="form-label" style="color: #fff;">
+                                Password
+                            </label>
+                            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- Remember Me -->
+                        <div class="form-check mb-3">
+                            <input asp-for="Input.RememberMe" class="form-check-input" />
+                            <label asp-for="Input.RememberMe" class="form-check-label" style="color: #fff;"></label>
+                        </div>
+
+                        <!-- Log In Button -->
+                        <button type="submit" class="btn btn-primary w-100">
+                            Log In
+                        </button>
+                    </form>
+
+                    <!-- Links -->
+                    <div class="mt-3">
+                        <a asp-page="./ForgotPassword" style="color: #64ff64;">Forgot your password?</a>
+                    </div>
+                    <div>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" style="color: #64ff64;">
+                            Register as a new user
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Two tank images at the bottom -->
+    <img src="/Images/tank-left.png"
+         alt="Tank Left"
+         style="position: absolute;
+                bottom: 10px;
+                left: 100px;
+                height: 120px;
+                z-index: 2;" />
+
+    <img src="/Images/tank-right.png"
+         alt="Tank Right"
+         style="position: absolute;
+                bottom: 10px;
+                right: 100px;
+                height: 120px;
+                z-index: 2;" />
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
