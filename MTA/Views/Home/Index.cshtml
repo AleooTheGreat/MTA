@@ -29,7 +29,9 @@
                 <div class="row">
                     <div class="col-md-8">
                         <h1 class="font-roboto display-5 fw-bold">@Html.Raw(ViewBag.FirstProject.Title)</h1>
-                        <div class="font-montserrat mb-3 truncate">@Html.Raw(ViewBag.FirstProject.Content)</div>
+                        <div class="font-montserrat mb-3 truncate" style="color: black; background-color: white; padding: 10px;">
+                            @Html.Raw(ViewBag.FirstProject.Content)
+                        </div>
                         <a href="/Projects/Show/@ViewBag.FirstProject.Id" class="btn btn-outline-success">Show project</a>
                     </div>
                     <div class="col-md-4">
