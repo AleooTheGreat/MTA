@@ -36,28 +36,19 @@ namespace MTA.Controllers
         [Authorize(Roles = "User,Commander,Marshall")]
         public IActionResult Index()
         {
-            // 1) Retrieve the current user's ID.
             var currentUserId = _userManager.GetUserId(User);
-
-            // 2) Start with the full projects query (unfiltered).
-            //    We'll apply role-based filtering below.
             var projects = db.Projects
                              .Include(p => p.Department)
-                             .Include(p => p.User)  // the user who created the project, presumably
+                             .Include(p => p.User)  
                              .OrderByDescending(p => p.Date);
 
-            // If you have any TempData messages, pass them to ViewBag
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
                 ViewBag.Alert = TempData["messageType"];
             }
-
-            // 3) If the current user is in the "User" role, filter
-            //    so that only assigned projects are shown.
             if (User.IsInRole("User"))
             {
-                // --- A) Projects assigned directly to the user via UserProjects ---
                 var directUserProjectIds = db.UserProjects
                                              .Where(up => up.UserId == currentUserId)
                                              .Select(up => up.ProjectId)
@@ -66,8 +57,6 @@ namespace MTA.Controllers
                                              .Distinct()
                                              .ToList();
 
-                // --- B) Projects assigned indirectly via Missions -> ProjectMissions ---
-                // First, get all mission IDs the user is part of.
                 var userMissionIds = db.UserMissions
                                        .Where(um => um.UserId == currentUserId)
                                        .Select(um => um.MissionId)
@@ -76,7 +65,6 @@ namespace MTA.Controllers
                                        .Distinct()
                                        .ToList();
 
-                // Then get the ProjectIDs linked to those mission IDs
                 var userProjectIdsFromMissions = db.ProjectMissions
                                                    .Where(pm => pm.MissionId.HasValue
                                                              && userMissionIds.Contains(pm.MissionId.Value))
@@ -86,12 +74,10 @@ namespace MTA.Controllers
                                                    .Distinct()
                                                    .ToList();
 
-                // Combine the two sets of Project IDs (direct + indirect)
                 var allUserProjectIds = directUserProjectIds
                                         .Union(userProjectIdsFromMissions)
                                         .ToList();
 
-                // Filter out only those projects that match these IDs
                 projects = projects.Where(p => allUserProjectIds.Contains(p.Id))
                                    .OrderByDescending(p => p.Date);
             }
@@ -128,7 +114,7 @@ namespace MTA.Controllers
 
             ViewBag.SearchString = search;
 
-            // 5) Pagination
+            // Pagination
             int _perPage = 5;
             int totalItems = projects.Count();
 
@@ -264,7 +250,7 @@ namespace MTA.Controllers
                     .Where(pm => pm.MissionId == projectMission.MissionId)
                     .Count() > 0)
                 {
-                    TempData["message"] = "This project was added in the mission!";
+                    TempData["message"] = "This project was already in the selected mission!";
                     TempData["messageType"] = "alert-danger";
                 }
                 else
@@ -274,7 +260,7 @@ namespace MTA.Controllers
                    
                     db.SaveChanges();
 
-                    TempData["message"] = "The project was added to the selected mission!";
+                    TempData["message"] = "The project was succesfully added to the selected mission!";
                     TempData["messageType"] = "alert-success";
                 }
 
