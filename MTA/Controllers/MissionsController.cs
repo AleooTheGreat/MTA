@@ -214,11 +214,13 @@ namespace MTA.Controllers
             return View(mission);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [Authorize(Roles = "Commander,Marshall")]
         public IActionResult DeleteConfirmed(int id)
         {
+            try { 
             var mission = db.Missions.Include(m => m.ProjectMissions)
+                                     .Include(m => m.UserMissions)
                                      .FirstOrDefault(m => m.Id == id);
 
             if (mission == null)
@@ -235,10 +237,24 @@ namespace MTA.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Remove associated UserMissions
+            if (mission.UserMissions != null && mission.UserMissions.Any())
+            {
+                db.UserMissions.RemoveRange(mission.UserMissions);
+            }
+
             db.Missions.Remove(mission);
-            db.SaveChanges();
-            TempData["message"] = "The mission was deleted!";
-            TempData["messageType"] = "alert-success";
+
+                db.SaveChanges();
+                TempData["message"] = "The mission and associated users were deleted!";
+                TempData["messageType"] = "alert-success";
+            }
+            catch (Exception ex)
+            {
+                TempData["message"] = "An error occurred while deleting the mission: " + ex.Message;
+                TempData["messageType"] = "alert-danger";
+            }
+
             return RedirectToAction("Index");
         }
 
