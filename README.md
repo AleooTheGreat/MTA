@@ -54,7 +54,7 @@ formularele de autentificare si inregistrare. Pagina de prezentare a platformei
 se realizeaza cu elemente pe care echipa le considera utile si pe care doreste
 sa le prezinte catre toti utilizatorii care acceseaza platforma (0.5p). Daca
 aceasta nu contine alte elemente in afara de login si register, nu se acorda
-intregul punctaj.  DONE (sper)
+intregul punctaj.  DONE 
 
 - Utilizatorii care creeaza un proiect devin automat organizatori.
 Organizatorul, avand acest rol punctual, nu trebuie sa fie in mod obligatoriu
@@ -66,17 +66,17 @@ backend. (0.5p).  DONE
 - Task-urile contin titlu, descriere, status, data start, data finalizare si continut
 media: text, imagini sau videoclip-uri de pe alte platforme (embedded).
 Toate campurile sunt obligatorii. Data de finalizare trebuie sa fie mai mare
-decat data de inceput. (1.0p).  (almost done)
+decat data de inceput. (1.0p).  DONE
 
 - Organizatorii adauga, modifica si sterg task-uri si asigneaza task-urile
-membrilor proiectului (1.0p).  (again fara membri)
+membrilor proiectului (1.0p).  DONE
 
 - Membrii pot doar sa lase comentarii la task-urile existente, doar in proiectele
 din care fac parte, si sa isi modifice sau sa isi stearga comentariile proprii
 (1.0p).  DONE
 
 - Membrii au access doar la task-urile alocate proiectelor din care acestia fac
-parte (0.5p).  
+parte (0.5p).  DONE
 
 - Atat organizatorul, cat si membrii, pot modifica statusul unui task: not
 started, in progress, completed (1.0p).  DONE
